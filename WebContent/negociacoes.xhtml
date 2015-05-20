@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+			<f:metadata>
+				<f:event listener="#{negociacaoBean.atualizaLista}" type="preRenderView" />
+			</f:metadata>
+		</ui:define>
+		<ui:define name="conteudo">
+		
+		<p:growl id="growl"/>
+		<h:form id="formLista" rendered="#{acessoBean.acessoNegociacao >= 1}">
+			<p:fieldset legend="Negociações" style="width:100%">
+				<p:dataTable id="listaNegociacoes" widgetVar="listaNegociacoes" value="#{negociacaoBean.negociacoes}" var="n" 
+					emptyMessage="Nenhuma Negociação encontrada" paginator="true" rows="15"
+					selectionMode="single" selection="#{negociacaoBean.negociacao}" rowKey="#{n}"
+					filteredValue="#{negociacaoBean.negociacoesFiltradas}">
+					
+					<p:ajax event="rowSelect" listener="#{negociacaoBean.onRowSelect}"/>
+
+					<p:column headerText="Id" width="5%" filterBy="id" filterMatchMode="contains" filterStyle="width: 90%;"
+						sortBy="id">
+						<h:outputText value="#{n.id}"/>
+					</p:column>
+					<p:column headerText="Data da Proposta" width="10%" sortBy="dataProposta.time">
+						<h:outputText value="#{n.dataProposta.time}">
+							<f:convertDateTime pattern="dd/MM/yy" timeZone="America/Sao_Paulo"/>
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Status" width="10%" filterBy="status" filterMatchMode="exact" filterStyle="width: 90%;"
+						sortBy="status">
+						<f:facet name="filter">
+			                <p:selectOneMenu onchange="PF('listaNegociacoes').filter()" style="width: 90%;">
+			                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+			                    <f:selectItems value="#{enumBean.statusNegociacao}"/>
+			                </p:selectOneMenu>
+			            </f:facet>	
+							<h:outputText value="#{n.status}"/>
+						</p:column>
+						<p:column headerText="Corretor" width="15%" filterBy="corretor" filterMatchMode="exact" filterStyle="width: 90%;"
+							sortBy="corretor.nome">
+						<f:facet name="filter">
+			                <p:selectOneMenu onchange="PF('listaNegociacoes').filter()" style="width: 90%;">
+			                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+			                    <f:selectItems value="#{funcionarioBean.corretores}" />
+			                </p:selectOneMenu>
+			            </f:facet>
+							<h:outputText value="#{n.corretor}"/>
+						</p:column>
+						<p:column headerText="Comprador" width="15%" filterBy="comprador" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="comprador.cliente.nome">
+							<h:outputText value="#{n.comprador}"/>
+						</p:column>
+						<p:column headerText="Vendedor" width="15%" filterBy="apartamento.vendedor" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="apartamento.vendedor.cliente.nome">
+							<h:outputText value="#{n.apartamento.vendedor}"/>
+						</p:column>
+						<p:column headerText="Condomínio" width="15%" filterBy="apartamento.torre" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="apartamento.torre.condominio.nome">
+							<h:outputText value="#{n.apartamento.torre}"/>
+						</p:column>
+						<p:column headerText="Endereço" width="20%" filterBy="apartamento.torre.condominio.endereco" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="apartamento.torre.condominio.endereco">
+							<h:outputText value="#{n.apartamento.torre.condominio.endereco}"/>
+						</p:column>
+						<p:column headerText="Valor Apto" width="10%" filterBy="valorApartamento" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="valorApartamento">
+							<h:outputText value="#{n.valorApartamento}"/>
+						</p:column>
+						<p:column headerText="Valor Proposto" width="10%" filterBy="valorProposto" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="valorProposto">
+							<h:outputText value="#{n.valorProposto}"/>
+						</p:column>
+						<p:column headerText="Apartamento">
+							<h:outputText value="#{n.apartamento}"/>
+						</p:column>
+				</p:dataTable>
+			</p:fieldset>
+		</h:form>
+
+
+		<!-- 		Dialog para adicionar um Perfil de Interesse -->
+		<p:dialog header="Visita" id="dialogVisita" widgetVar="dialogVisita" resizable="false"
+			draggable="false" modal="true" closeOnEscape="true" dynamic="true" width="50%">
+			<p:ajax event="close" listener="#{visitaBean.atualizaLista}" update="formLista"/>
+			<h:form id="formVisita">
+
+				<ui:include src="/infoVisita.xhtml" />
+
+				<p:commandButton value="Salvar" action="#{visitaBean.gravar}" update="formVisita"
+					rendered="#{acessoBean.acessoVisita >= 2}"/>
+				<p:commandButton value="Cancelar" action="#{visitaBean.cancelarVisita}" update="formVisita"
+					rendered="#{!visitaBean.cancelada and !visitaBean.concluida and acessoBean.acessoVisita >= 2}"/>
+				<p:commandButton value="Confirmar" action="#{visitaBean.confirmarVisita}" update="formVisita"
+					rendered="#{!visitaBean.confirmada and !visitaBean.concluida and acessoBean.acessoVisita >= 2}"/>
+				<p:commandButton value="Concluir" action="#{visitaBean.concluirVisita}" update="formVisita"
+					rendered="#{visitaBean.confirmada and !visitaBean.concluida and acessoBean.acessoVisita >= 2}"/>
+				<p:commandButton value="Concluir e Criar Negociação" action="#{visitaBean.concluirENegociar}" update="formVisita"
+					rendered="#{visitaBean.confirmada and !visitaBean.concluida and acessoBean.acessoVisita >= 2 and acessoBean.acessoNegociacao >= 3}"/>
+			</h:form>
+		</p:dialog>
+			
+		</ui:define>
+	</ui:composition>
+</html>

@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+		</ui:define>
+		<ui:define name="conteudo">
+			<p:growl id="growl"/>
+		
+				<p:dialog header="Cadastro de Nível de Acesso" widgetVar="nivelAcessoDialog" resizable="false" 
+					id="nivelAcessoDialog" draggable="false" modal="true" width="40%" styleClass="dialog" closeOnEscape="true" dynamic="true" height="90%">
+					<h:form id="form">
+					<p:tabView style="width:100%; height:100%;" activeIndex="0" dynamic="true" cache="true" scrollable="true">		
+					
+						<p:tab title="Nível de Acesso">
+							<p:messages id="msgs"/>
+							<h:panelGrid columns="2" columnClasses="title, value" styleClass="dialog">
+								
+								<h:outputLabel value="Id:" for="id" rendered="#{!nivelAcessoBean.novo}"/>
+								<p:inputText id="id" value="#{nivelAcessoBean.nivelAcesso.id}" rendered="#{!nivelAcessoBean.novo}" disabled="true"/>
+								
+								<h:outputLabel value="Descrição:" for="descricao"/>
+								<p:inputText id="descricao" value="#{nivelAcessoBean.nivelAcesso.descricao}">
+									<p:ajax event="keypress" update="msgs"/>
+								</p:inputText>
+								
+								<h:outputLabel value="Funcionário:" for="funcionario"/>
+								<p:selectOneMenu id="funcionario" value="#{nivelAcessoBean.nivelAcesso.acessarFuncionario}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Cargo:" for="cargo"/>
+								<p:selectOneMenu id="cargo" value="#{nivelAcessoBean.nivelAcesso.acessarCargo}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Departamento:" for="departamento"/>
+								<p:selectOneMenu id="departamento" value="#{nivelAcessoBean.nivelAcesso.acessarDepartamento}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Nível de Acesso:" for="nivelAcesso"/>
+								<p:selectOneMenu id="nivelAcesso" value="#{nivelAcessoBean.nivelAcesso.acessarNivelAcesso}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+							
+								<h:outputLabel value="Ações:" for="acoes"/>
+								<p:selectOneMenu id="acoes" value="#{nivelAcessoBean.nivelAcesso.acessarAcoes}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Número:" for="numero"/>
+								<p:selectOneMenu id="numero" value="#{nivelAcessoBean.nivelAcesso.acessarNumero}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Aparelho:" for="aparelho"/>
+								<p:selectOneMenu id="aparelho" value="#{nivelAcessoBean.nivelAcesso.acessarAparelho}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Construtora:" for="construtora"/>
+								<p:selectOneMenu id="construtora" value="#{nivelAcessoBean.nivelAcesso.acessarConstrutora}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Distrito:" for="distrito"/>
+								<p:selectOneMenu id="distrito" value="#{nivelAcessoBean.nivelAcesso.acessarDistrito}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Setorização:" for="setorizacao"/>
+								<p:selectOneMenu id="setorizacao" value="#{nivelAcessoBean.nivelAcesso.acessarSetorizacao}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Transporte:" for="transporte"/>
+								<p:selectOneMenu id="transporte" value="#{nivelAcessoBean.nivelAcesso.acessarTransporte}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Periodicidade das Vagas:" for="periodicidade"/>
+								<p:selectOneMenu id="periodicidade" value="#{nivelAcessoBean.nivelAcesso.acessarPeriodicidade}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Tipo de Vaga:" for="tipoVaga"/>
+								<p:selectOneMenu id="tipoVaga" value="#{nivelAcessoBean.nivelAcesso.acessarTipoVaga}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Tipo de Apto:" for="tipoApartamento"/>
+								<p:selectOneMenu id="tipoApartamento" value="#{nivelAcessoBean.nivelAcesso.acessarTipoApartamento}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Estágio de Atendimento:" for="estagioAtendimento"/>
+								<p:selectOneMenu id="estagioAtendimento" value="#{nivelAcessoBean.nivelAcesso.acessarEstagioAtendimento}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Mídia:" for="midia"/>
+								<p:selectOneMenu id="midia" value="#{nivelAcessoBean.nivelAcesso.acessarMidia}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Investimento Mídia:" for="investimentoMidia"/>
+								<p:selectOneMenu id="investimentoMidia" value="#{nivelAcessoBean.nivelAcesso.acessarInvestimentoMidia}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Evento de Mídia:" for="eventoMidia"/>
+								<p:selectOneMenu id="eventoMidia" value="#{nivelAcessoBean.nivelAcesso.acessarEventoMidia}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Condomínio:" for="condominio"/>
+								<p:selectOneMenu id="condominio" value="#{nivelAcessoBean.nivelAcesso.acessarCondominio}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Transporte do Condomínio:" for="transporteCondominio"/>
+								<p:selectOneMenu id="transporteCondominio" value="#{nivelAcessoBean.nivelAcesso.acessarTransporteDoCondominio}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Torre:" for="torre"/>
+								<p:selectOneMenu id="torre" value="#{nivelAcessoBean.nivelAcesso.acessarTorre}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Contato do Condomínio:" for="contatoCondominio"/>
+								<p:selectOneMenu id="contatoCondominio" value="#{nivelAcessoBean.nivelAcesso.acessarContatoCondominio}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Planta:" for="planta"/>
+								<p:selectOneMenu id="planta" value="#{nivelAcessoBean.nivelAcesso.acessarPlantaTorre}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Comprador:" for="comprador"/>
+								<p:selectOneMenu id="comprador" value="#{nivelAcessoBean.nivelAcesso.acessarComprador}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Follow-Up Comprador:" for="followUpComprador"/>
+								<p:selectOneMenu id="followUpComprador" value="#{nivelAcessoBean.nivelAcesso.acessarFollowUpComprador}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Cliente:" for="cliente"/>
+								<p:selectOneMenu id="cliente" value="#{nivelAcessoBean.nivelAcesso.acessarCliente}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Perfil de Interesse:" for="perfilInteresse"/>
+								<p:selectOneMenu id="perfilInteresse" value="#{nivelAcessoBean.nivelAcesso.acessarPerfilInteresse}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Aptos Favoritos:" for="aptosFavoritos"/>
+								<p:selectOneMenu id="aptosFavoritos" value="#{nivelAcessoBean.nivelAcesso.acessarApartamentosFavoritos}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Histórico de Corretor:" for="historico"/>
+								<p:selectOneMenu id="historico" value="#{nivelAcessoBean.nivelAcesso.acessarHistoricoCorretores}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Transferir Corretor:" for="transferir"/>
+								<p:selectOneMenu id="transferir" value="#{nivelAcessoBean.nivelAcesso.acessarTransferirCorretor}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Visita:" for="visita"/>
+								<p:selectOneMenu id="visita" value="#{nivelAcessoBean.nivelAcesso.acessarVisita}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Atribuir Visita:" for="atribuirVisita"/>
+								<p:selectOneMenu id="atribuirVisita" value="#{nivelAcessoBean.nivelAcesso.acessarAtribuirVisita}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Negociação:" for="negociacao"/>
+								<p:selectOneMenu id="negociacao" value="#{nivelAcessoBean.nivelAcesso.acessarNegociacao}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Corretor da Negociação:" for="corretorNegociacao"/>
+								<p:selectOneMenu id="corretorNegociacao" value="#{nivelAcessoBean.nivelAcesso.acessarCorretorNegociacao}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Fechamento:" for="fechamento"/>
+								<p:selectOneMenu id="fechamento" value="#{nivelAcessoBean.nivelAcesso.acessarFechamento}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Apartamento:" for="apartamento"/>
+								<p:selectOneMenu id="apartamento" value="#{nivelAcessoBean.nivelAcesso.acessarApartamento}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Vaga de Garagem:" for="vagaApartamento"/>
+								<p:selectOneMenu id="vagaApartamento" value="#{nivelAcessoBean.nivelAcesso.acessarVagaApartamento}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Proprietário:" for="proprietario"/>
+								<p:selectOneMenu id="proprietario" value="#{nivelAcessoBean.nivelAcesso.acessarProprietario}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Follow-Up da Negociação:" for="followUpNegociacao"/>
+								<p:selectOneMenu id="followUpNegociacao" value="#{nivelAcessoBean.nivelAcesso.acessarFollowUpNegociacao}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Follow-Up do Fechamento:" for="followUpFechamento"/>
+								<p:selectOneMenu id="followUpFechamento" value="#{nivelAcessoBean.nivelAcesso.acessarFollowUpFechamento}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								<h:outputLabel value="Follow-Up do Apartamento:" for="followUpApartamento"/>
+								<p:selectOneMenu id="followUpApartamento" value="#{nivelAcessoBean.nivelAcesso.acessarFollowUpApartamento}">
+									<f:selectItems value="#{enumBean.niveisAcesso}"/>
+								</p:selectOneMenu>
+								
+								
+								<p:commandButton value="#{nivelAcessoBean.novo? 'Gravar' : 'Atualizar'}" process=":form" update=":formLista:listaNiveisAcesso :form" 
+									action="#{nivelAcessoBean.gravar}" rendered="#{acessoBean.acessoNivelAcesso >= 2}"/>
+								<p:commandButton value="Deletar" process=":form" update=":formLista:listaNiveisAcesso :growl" actionListener="#{nivelAcessoBean.deletar}" 
+									rendered="#{nivelAcessoBean.deletavel and acessoBean.acessoNivelAcesso >= 4}" oncomplete="PF('nivelAcessoDialog').hide()">
+									<p:confirm header="Excluir" message="Confirma Exclusão?"/>
+								</p:commandButton>
+								
+								<p:confirmDialog global="true" showEffect="fade">
+							        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							    </p:confirmDialog>
+								
+							</h:panelGrid>
+						</p:tab>
+						
+						<p:tab title="Funcionarios" rendered="#{!nivelAcessoBean.semFuncionarios}">
+							<p:dataTable id="listaFuncionarios" value="#{nivelAcessoBean.nivelAcesso.funcionarios}" var="f" 
+								paginator="true" rows="6" lazy="true">
+								<p:column headerText="Id" width="15%">
+									<h:outputText value="#{f.id}"/>
+								</p:column>
+								<p:column headerText="Nome" width="50%">
+									<h:outputText value="#{f}"/>
+								</p:column>
+								<p:column headerText="Departamento" width="35%">
+									<h:outputText value="#{f.departamento.descricao}"/>
+								</p:column>
+							</p:dataTable>
+						</p:tab>
+						
+					</p:tabView>
+					</h:form>
+				</p:dialog>
+				
+				<h:form id="formLista" rendered="#{acessoBean.acessoNivelAcesso >= 1}">
+					<p:fieldset legend="Níveis de Acesso" style="width:50%">
+					
+					<p:commandButton value="Novo Nível de Acesso" update=":form" onclick="PF('nivelAcessoDialog').show()" 
+						actionListener="#{nivelAcessoBean.limparNivelAcesso}" rendered="#{acessoBean.acessoNivelAcesso >= 3}"/>
+					<br/>	
+					
+						<p:dataTable id="listaNiveisAcesso" widgetVar="listaNiveisAcesso" value="#{nivelAcessoBean.niveisAcesso}" var="c" 
+							emptyMessage="Nenhum Nível de Acesso encontrado" paginator="true" rows="15"
+							selectionMode="single" selection="#{nivelAcessoBean.nivelAcesso}" rowKey="#{c}"
+							filteredValue="#{nivelAcessoBean.niveisAcessoFiltrados}">
+							
+							<p:ajax event="rowSelect" update=":form" oncomplete="PF('nivelAcessoDialog').show()"/>
+							
+							<p:column headerText="Id" width="10%" filterBy="id" filterMatchMode="contains" filterStyle="width: 90%;"
+								sortBy="id">
+								<h:outputText value="#{c.id}"/>
+							</p:column>
+							<p:column headerText="Nível de Acesso" width="30%" filterBy="descricao" filterMatchMode="contains" filterStyle="width: 90%;"
+								sortBy="descricao">
+								<h:outputText value="#{c.descricao}"/>
+							</p:column>
+							<p:column headerText="Funcionarios" width="15%" sortBy="funcionarios.size()">
+								<h:outputText value="#{c.funcionarios.size()}"/>
+							</p:column>
+						</p:dataTable>
+					</p:fieldset>
+				</h:form>
+
+		</ui:define>
+	</ui:composition>
+</html>

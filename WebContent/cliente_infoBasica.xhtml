@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+    <body>
+	    <h:outputStylesheet library="css" name="forms.css"/>
+	    <ui:composition>
+				<p:messages id="msgsCliente"/>
+				<p:accordionPanel multiple="true">
+			
+<!-- 					Tab Informações do Cliente -->
+				<p:tab title="Informações Pessoais">
+				<h:panelGrid id="soParaExistente" rendered="#{!clienteBean.novo}" columns="2" columnClasses="title, value">
+					<h:outputLabel value="Id:" for="id"/>
+					<p:inputText id="id" value="#{clienteBean.cliente.id}" disabled="true"/>
+							
+					<h:outputLabel value="Data Cadastro:" for="dataCadastro"/>
+					<p:inputText id="dataCadastro" value="#{clienteBean.cliente.dataCadastro.time}" disabled="true">
+						<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo" />
+					</p:inputText>
+
+					<h:outputLabel value="Quem Cadastrou:" for="quemCadastrou"/>
+					<p:inputText id="quemCadastrou" value="#{clienteBean.cliente.quemCadastrou}"
+						disabled="true" />
+
+					<h:outputLabel value="Data Alteração:" for="dataAlteracao"/>
+					<p:inputText id="dataAlteracao" value="#{clienteBean.cliente.dataUltimaAlteracao.time}"
+						disabled="true">
+						<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo" />
+					</p:inputText>
+
+					<h:outputLabel value="Quem Alterou:" for="quemAlterou"/>
+					<p:inputText id="quemAlterou" value="#{clienteBean.cliente.quemAlterou}"
+						disabled="true" />
+				</h:panelGrid>	
+				<h:panelGrid columns="2">
+				<p:fieldset legend="Comprador">
+					
+					<h:panelGrid columns="2" columnClasses="title, value">
+						
+						<h:outputLabel value="Nome:" for="nome" />
+						<p:inputText id="nome" value="#{clienteBean.cliente.nome}">
+							<p:ajax event="blur" update="@form:msgsCliente"/>
+						</p:inputText>
+						
+						<h:outputLabel value="Sobrenome:" for="sobrenome" />
+						<p:inputText id="sobrenome" value="#{clienteBean.cliente.sobrenome}">
+							<p:ajax event="blur" update="@form:msgsCliente"/>
+						</p:inputText>
+	
+						<h:outputLabel value="Data de Nascimento:" for="dataNascimento" />
+						<p:calendar id="dataNascimento" value="#{clienteBean.cliente.dataNascimento.time}" effect="fold" navigator="true" 
+								pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo"/>
+	
+						<h:outputLabel value="CPF:" for="cpf" />
+						<p:inputMask mask="999.999.999-99" id="cpf" value="#{clienteBean.cliente.cpf}"
+							validatorMessage="CPF Inválido.">
+							<p:ajax event="blur" update="@form:msgsCliente" />
+						</p:inputMask>
+	
+						<h:outputLabel value="RG:" for="rg" />
+						<p:inputText id="rg" value="#{clienteBean.cliente.rg}"/>
+	
+						<h:outputLabel value="Telefone:" for="telefone" />
+						<p:inputMask mask="(99)9999-9999" id="telefone" value="#{clienteBean.cliente.telefone}" />
+	
+						<h:outputLabel value="Celular:" for="celular" />
+						<p:inputMask mask="(99)99999-9999" id="celular" value="#{clienteBean.cliente.celular}">
+							<p:ajax event="blur" update="@form:msgsCliente"/>
+						</p:inputMask>
+	
+						<h:outputLabel value="Email:" for="email" />
+						<p:inputText id="email" value="#{clienteBean.cliente.email}" validatorMessage="E-mail Inválido">
+							<p:ajax event="blur" update="@form:msgsCliente"/>
+						</p:inputText>
+					</h:panelGrid>
+				</p:fieldset>
+				
+				<p:fieldset legend="Conjuge">
+					<h:panelGrid columns="2" columnClasses="title, value">
+
+						<h:outputLabel value="Nome:" for="nome" />
+						<p:inputText id="nomeConjuge" value="#{clienteBean.cliente.nomeConjuge}">
+							<p:ajax event="blur" update="@form:msgsCliente"/>
+						</p:inputText>
+
+						<h:outputLabel value="Sobrenome:" for="sobrenome" />
+						<p:inputText id="sobrenomeConjuge" value="#{clienteBean.cliente.sobrenomeConjuge}">
+							<p:ajax event="blur" update="@form:msgsCliente"/>
+						</p:inputText>
+
+						<h:outputLabel value="Data de Nascimento:" for="dataNascimento" />
+						<p:calendar id="dataNascimentoConjuge" value="#{clienteBean.cliente.dataNascimentoConjuge.time}"
+							effect="fold" navigator="true" pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" locale="br" />
+
+						<h:outputLabel value="CPF:" for="cpf" />
+						<p:inputMask mask="999.999.999-99" id="cpfConjuge" value="#{clienteBean.cliente.cpfConjuge}">
+							<p:ajax event="blur" update="@form:msgsCliente"/>
+						</p:inputMask>
+
+						<h:outputLabel value="RG:" for="rg" />
+						<p:inputText id="rgConjuge" value="#{clienteBean.cliente.rgConjuge}"/>
+
+						<h:outputLabel value="Telefone:" for="telefone" />
+						<p:inputMask mask="(99)9999-9999" id="telefoneConjuge" value="#{clienteBean.cliente.telefoneConjuge}" />
+
+						<h:outputLabel value="Celular:" for="celular" />
+						<p:inputMask mask="(99)99999-9999" id="celularConjuge" value="#{clienteBean.cliente.celularConjuge}"/>
+
+						<h:outputLabel value="Email:" for="email" />
+						<p:inputText id="emailConjuge" value="#{clienteBean.cliente.emailConjuge}">
+							<p:ajax event="blur" />
+						</p:inputText>
+
+					</h:panelGrid>
+				</p:fieldset>
+				</h:panelGrid>
+				
+				</p:tab>
+						
+<!-- 			Tab Informações Endereço -->
+				<p:tab title="Endereço" id="tabEndereco">
+				<h:panelGrid columns="2">
+					<p:fieldset legend="Casa">
+					<h:panelGrid columns="2" columnClasses="title, value"
+						styleClass="panelGrid" id="panelEndereco" >
+						<h:outputLabel value="CEP*:" for="cep" />
+						<p:inputMask id="cep" mask="99999-999" value="#{clienteBean.cliente.cep}">
+							<p:ajax event="blur" listener="#{clienteBean.buscaCEP}" update="panelEndereco @form:msgsCliente" />
+						</p:inputMask>
+
+						<h:outputLabel value="Logradouro*:" for="logradouro" />
+						<p:inputText id="logradouro" value="#{clienteBean.cliente.logradouro}">
+							<p:ajax event="blur" update="@form:msgsCliente" />
+						</p:inputText>
+
+						<h:outputLabel value="Número*:" for="numero" />
+						<p:inputText id="numero" value="#{clienteBean.cliente.numero}"
+							validatorMessage="Digite um número válido">
+							<f:convertNumber integerOnly="true" />
+							<f:ajax event="blur" update="@form:msgsCliente" />
+						</p:inputText>
+
+						<h:outputLabel value="Complemento:" for="complemento" />
+						<p:inputText id="complemento" value="#{clienteBean.cliente.complemento}" />
+
+						<h:outputLabel value="Bairro:" for="bairro" />
+						<p:inputText id="bairro" value="#{clienteBean.cliente.bairro}">
+							<p:ajax event="blur" update="@form:msgsCliente" />
+						</p:inputText>
+
+						<h:outputLabel value="Cidade:" for="cidade" />
+						<p:inputText id="cidade" value="#{clienteBean.cliente.cidade}">
+							<p:ajax event="blur" update="@form:msgsCliente" />
+						</p:inputText>
+
+						<h:outputLabel value="Estado:" for="estado" />
+						<p:selectOneMenu id="estado" value="#{clienteBean.cliente.estado}">
+							<f:selectItems value="#{enumBean.estados}" />
+						</p:selectOneMenu>
+					</h:panelGrid>
+					</p:fieldset>
+
+					<p:fieldset legend="Trabalho">
+					<h:panelGrid id="panelEnderecoTrabalho" columns="2" columnClasses="title, value"
+						styleClass="panelGrid">
+						<h:outputLabel value="CEP*:" for="cepTrabalho" />
+						<p:inputMask id="cepTrabalho" mask="99999-999" value="#{clienteBean.cliente.cepTrabalho}">
+							<p:ajax event="blur" listener="#{clienteBean.buscaCEPTrabalho}"
+								update="panelEnderecoTrabalho @form:msgsCliente" />
+						</p:inputMask>
+
+						<h:outputLabel value="Logradouro*:" for="logradouroTrabalho" />
+						<p:inputText id="logradouroTrabalho" value="#{clienteBean.cliente.logradouroTrabalho}">
+							<p:ajax event="blur" update="@form:msgsCliente"/>
+						</p:inputText>
+
+						<h:outputLabel value="Número*:" for="numeroTrabalho" />
+						<p:inputText id="numeroTrabalho" value="#{clienteBean.cliente.numeroTrabalho}"
+							converterMessage="Digite um número válido">
+							<f:convertNumber integerOnly="true" />
+							<f:ajax event="blur" update="@form:msgsCliente" />
+						</p:inputText>
+
+						<h:outputLabel value="Complemento:" for="complementoTrabalho" />
+						<p:inputText id="complementoTrabalho" value="#{clienteBean.cliente.complementoTrabalho}" />
+
+						<h:outputLabel value="Bairro:" for="bairroTrabalho" />
+						<p:inputText id="bairroTrabalho" value="#{clienteBean.cliente.bairroTrabalho}">
+							<p:ajax event="blur" update="@form:msgsCliente" />
+						</p:inputText>
+
+						<h:outputLabel value="Cidade:" for="cidadeTrabalho" />
+						<p:inputText id="cidadeTrabalho" value="#{clienteBean.cliente.cidadeTrabalho}">
+							<p:ajax event="blur" update="@form:msgsCliente" />
+						</p:inputText>
+
+						<h:outputLabel value="Estado:" for="estadoTrabalho" />
+						<p:selectOneMenu id="estadoTrabalho" value="#{clienteBean.cliente.estadoTrabalho}">
+							<f:selectItems value="#{enumBean.estados}" />
+						</p:selectOneMenu>
+					</h:panelGrid>
+					</p:fieldset>
+				</h:panelGrid>
+				</p:tab>
+			</p:accordionPanel>
+	    </ui:composition>
+    </body>
+</html>

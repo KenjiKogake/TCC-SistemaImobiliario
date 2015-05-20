@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+		</ui:define>
+		<ui:define name="conteudo">
+				<p:growl id="growl"/>
+			
+				<p:dialog header="Cadastro de Distrito" widgetVar="distritoDialog" resizable="false" 
+					id="distritoDialog" draggable="false" modal="true" width="60%" closeOnEscape="true">
+					<h:form id="form">
+					<p:outputPanel id="distritoDetail">		
+					<p:tabView style="width:100%" id="tabView">
+					
+						<p:tab title="Distrito">
+							<p:messages id="msgs"/>
+							<h:panelGrid columns="2" columnClasses="title, value">
+								
+								<h:outputLabel value="Id:" for="id" rendered="#{!distritoBean.novo}"/>
+								<p:inputText id="id" value="#{distritoBean.distrito.id}" rendered="#{!distritoBean.novo}" disabled="true"/>
+								
+								<h:outputLabel value="Data Cadastro:" for="dataCadastro" rendered="#{!distritoBean.novo}"/>
+								<p:inputText id="dataCadastro" value="#{distritoBean.distrito.dataCadastro.time}" rendered="#{!distritoBean.novo}" disabled="true">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</p:inputText>
+								
+								<h:outputLabel value="Cadastrante:" for="quemCadastrou" rendered="#{!distritoBean.novo}"/>
+								<p:inputText id="quemCadastrou" value="#{distritoBean.distrito.quemCadastrou}" rendered="#{!distritoBean.novo}" disabled="true"/>
+								
+								<h:outputLabel value="Distrito:" for="distrito"/>
+								<p:inputText id="distrito" value="#{distritoBean.distrito.nome}">
+									<p:ajax event="keypress" update="msgs"/>
+								</p:inputText>
+								
+								<h:outputLabel value="Descrição:" for="descricao"/>
+								<p:inputTextarea id="descricao" value="#{distritoBean.distrito.descricao}"
+									autoResize="true" rows="2">
+									<p:ajax event="keypress" update="msgs"/>
+								</p:inputTextarea>
+							
+								<p:commandButton value="#{distritoBean.novo? 'Gravar' : 'Atualizar'}" process=":form:distritoDetail" update=":formLista:listaDistritos :form" 
+									action="#{distritoBean.gravar}" rendered="#{acessoBean.acessoDistrito >= 2}"/>
+								<p:commandButton value="Deletar" process=":form:distritoDetail" update=":formLista:listaDistritos :growl" actionListener="#{distritoBean.deletar}" 
+									rendered="#{distritoBean.deletavel and acessoBean.acessoDistrito >= 4}" oncomplete="PF('distritoDialog').hide()">
+									<p:confirm header="Excluir" message="Confirma Exclusão?"/>
+								</p:commandButton>
+								
+								<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							    </p:confirmDialog>
+							</h:panelGrid>
+						</p:tab>
+						<p:tab title="Condomínios" rendered="#{!distritoBean.semCondominios}">
+							<p:dataTable id="listaCondominios" value="#{distritoBean.distrito.condominios}" var="c" 
+								paginator="true" rows="6" lazy="true">
+								<p:column headerText="Id" width="15%">
+									<h:outputText value="#{c.id}"/>
+								</p:column>
+								<p:column headerText="Nome" width="30%">
+									<h:outputText value="#{c.nome}"/>
+								</p:column>
+								<p:column headerText="Endereço" width="35%">
+									<h:outputText value="#{c.logradouro}, #{c.numero}"/>
+								</p:column>
+								<p:column headerText="Bairro" width="20%">
+									<h:outputText value="#{c.bairro}"/>
+								</p:column>
+							</p:dataTable>
+						</p:tab>
+						
+					</p:tabView>
+					</p:outputPanel>
+				</h:form>
+				</p:dialog>
+				
+				<h:form id="formLista" rendered="#{acessoBean.acessoDistrito >= 1}">	
+					<p:fieldset legend="Distritos" style="width:70%">
+					
+					<p:commandButton value="Novo Distrito" update=":form:distritoDetail" onclick="PF('distritoDialog').show()" 
+						actionListener="#{distritoBean.limparDistrito}" rendered="#{acessoBean.acessoDistrito >= 3}"/>
+					<br/>
+					
+						<p:dataTable id="listaDistritos" widgetVar="listaDistritos" value="#{distritoBean.distritos}" var="d" 
+							emptyMessage="Nenhum distrito encontrado" paginator="true" rows="15"
+							selectionMode="single" selection="#{distritoBean.distrito}" rowKey="#{d}" 
+							filteredValue="#{distritoBean.distritosFiltrados}">
+							
+							<p:ajax event="rowSelect" update=":form:distritoDetail" oncomplete="PF('distritoDialog').show()"/>
+							
+							<p:column headerText="Id" width="10%" sortBy="#{d.id}"
+								filterBy="#{d.id}" filterMatchMode="contains" filterStyle="width: 90%;">
+								<h:outputText value="#{d.id}"/>
+							</p:column>
+							<p:column headerText="Data Cadastro" width="15%" sortBy="#{d.dataCadastro.time}">
+								<h:outputText value="#{d.dataCadastro.time}">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Distrito" width="30%" sortBy="#{d.nome}"
+								filterBy="#{d.nome}" filterMatchMode="contains" filterStyle="width: 90%;">
+								<h:outputText value="#{d.nome}"/>
+							</p:column>
+							<p:column headerText="Descrição" width="30%" sortBy="#{d.descricao}"
+								filterBy="#{d.descricao}" filterMatchMode="contains" filterStyle="width: 90%;">
+								<h:outputText value="#{d.descricao}"/>
+							</p:column>
+							<p:column headerText="Condomínios" width="15%" sortBy="#{d.condominios.size()}">
+								<h:outputText value="#{d.condominios.size()}"/>
+							</p:column>
+						</p:dataTable>
+					</p:fieldset>
+				</h:form>
+				
+		</ui:define>
+	</ui:composition>
+</html>

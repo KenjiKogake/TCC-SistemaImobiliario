@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+			<f:metadata>
+				<f:event listener="#{acaoFeitaBean.atualizaLista}" type="preRenderView"/>
+			</f:metadata>
+		</ui:define>
+		<ui:define name="conteudo">
+			<h:form id="form" rendered="#{acessoBean.acessoAcoes >= 1}">
+				<p:fieldset legend="Ações">
+					<p:dataTable id="listaAcoes" widgetVar="listaAcoes" value="#{acaoFeitaBean.acoes}" var="a" emptyMessage="Nenhuma Ação Feita"
+						 selectionMode="single" selection="#{acaoFeitaBean.acao}" rowKey="#{a}" 
+						 filteredValue="#{acaoFeitaBean.acoesFiltradas}" paginator="true" rows="40">
+
+						<p:column headerText="Id" width="5%" sortBy="#{a.id}"
+							filterBy="#{a.id}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{a.id}"/>
+						</p:column>
+						<p:column headerText="Quando?" sortBy="#{a.dataCadastro.time}" width="10%">
+							<h:outputText value="#{a.dataCadastro.time}" >
+								<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Quem?" sortBy="#{a.quemCadastrou.nome}" filterBy="#{a.quemCadastrou.nome}" 
+							filterMatchMode="exact" width="15%">
+							<f:facet name="filter">
+				                <p:selectOneMenu onchange="PF('listaAcoes').filter()" style="width: 90%;">
+				                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+				                    <f:selectItems value="#{funcionarioBean.funcionarios}" />
+				                </p:selectOneMenu>
+				            </f:facet>
+							<h:outputText value="#{a.quemCadastrou.nome}"/>
+						</p:column>
+						<p:column headerText="O que?" sortBy="#{a.tipoAcao}" filterBy="#{a.tipoAcao}" filterMatchMode="exact" width="10%">
+							<f:facet name="filter">
+				                <p:selectOneMenu onchange="PF('listaAcoes').filter()" style="width: 90%;">
+				                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+				                    <f:selectItems value="#{enumBean.tiposAcao}" />
+				                </p:selectOneMenu>
+				            </f:facet>
+							<h:outputText value="#{a.tipoAcao}"/>
+						</p:column>
+						<p:column headerText="Onde?" sortBy="#{a.cadastro}" filterBy="#{a.cadastro}" filterMatchMode="exact" width="15%">
+							<f:facet name="filter">
+				                <p:selectOneMenu onchange="PF('listaAcoes').filter()" style="width: 90%;">
+				                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+				                    <f:selectItems value="#{enumBean.cadastros}" />
+				                </p:selectOneMenu>
+				            </f:facet>
+							<h:outputText value="#{a.cadastro}"/>
+						</p:column>
+						<p:column headerText="Id Modificado" sortBy="#{a.idDoCadastro}" width="8%"
+							filterBy="#{a.idDoCadastro}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{a.idDoCadastro}"/>
+						</p:column>
+						<p:column headerText="Descrição" sortBy="#{a.descricao}" width="30%"
+							filterBy="#{a.descricao}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{a.descricao}"/>
+						</p:column>
+					</p:dataTable>
+				</p:fieldset>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</html>

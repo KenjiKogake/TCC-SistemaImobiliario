@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="_template.xhtml">
+
+	<ui:define name="titulo">
+		<f:metadata>
+			<f:viewParam name="id" value="#{negociacaoBean.id}"/>
+			<f:event listener="#{negociacaoBean.onActionView}" type="preRenderView" />
+		</f:metadata>
+	</ui:define>
+	
+	<ui:define name="conteudo">
+		<p:growl id="growl"/>
+		
+		<p:tabView id="tabView" dynamic="true" cache="true" >
+			
+			<p:tab id="tabNegociacao" title="Negociação"> 
+				<h:form id="formNegociacao">
+					<p:messages id="msgsComprador"/>
+					
+					
+					<p:fieldset legend="Comprador">	
+						<h:panelGrid id="panelComprador" columns="4" columnClasses="title, value, title, value">
+						
+						<h:outputLabel value="Nome:" for="nomeComprador"/>
+						<h:outputText id="nomeComprador" value="#{negociacaoBean.negociacao.comprador.cliente.nome}"/>
+						
+						<h:outputLabel value="E-mail:" for="emailComprador"/>
+						<h:outputText id="emailComprador" value="#{negociacaoBean.negociacao.comprador.cliente.email}"/>
+						
+						<h:outputLabel value="Telefone:" for="telefoneComprador"/>
+						<h:outputText id="telefoneComprador" value="#{negociacaoBean.negociacao.comprador.cliente.telefone}"/>
+						
+						<h:outputLabel value="Celular:" for="celularComprador"/>
+						<h:outputText id="celularComprador" value="#{negociacaoBean.negociacao.comprador.cliente.celular}"/>
+						
+						<h:outputLabel value="Grau de Interesse:" for="grauInteresse"/>
+						<p:rating value="#{negociacaoBean.negociacao.comprador.grauInteresse}" readonly="true"/>
+						
+						</h:panelGrid>
+					</p:fieldset>
+					
+					<br/>
+					
+					<p:fieldset legend="Proposta">
+						<h:panelGrid id="panelGrid" columns="2" columnClasses="title, value">
+					
+						<h:outputLabel value="Data da Visita:" for="dataVisita" rendered="#{negociacaoBean.comVisita}"/>
+						<h:outputLabel id="dataVisita" value="#{negociacaoBean.negociacao.visita.dataVisita.time}" rendered="#{negociacaoBean.comVisita}">
+							<f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo"/>
+						</h:outputLabel>
+						
+						<h:outputLabel value="Visita" for="btSelecionarVisita" rendered="#{!negociacaoBean.comVisita}"/>
+						<p:commandButton id="btSelecionarVisita" value="Selecionar" rendered="#{!negociacaoBean.comVisita}"/>
+						
+						<h:outputLabel value="Corretor:" for="corretor"/>
+						<h:outputText id="corretor" value="#{negociacaoBean.negociacao.corretor}"/>
+						
+						<h:outputLabel value="Data Proposta:" for="dataProposta"/>
+						<h:outputLabel id="dataProposta" value="#{negociacaoBean.negociacao.dataProposta.time}">
+							<f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo"/>
+						</h:outputLabel>
+						
+						<h:outputLabel value="Status:" for="status"/>
+						<p:inputText id="status" value="#{negociacaoBean.negociacao.status}" readonly="true"/>
+						
+						<h:outputLabel value="Valor Apartamento:" for="vlApartamento"/>
+						<p:inputText id="vlApartamento" value="#{negociacaoBean.negociacao.valorApartamento}" readonly="true"/>
+						
+						<h:outputLabel value="Valor Proposta:" for="vlProposta"/>
+						<p:inputText id="vlProposta" value="#{negociacaoBean.negociacao.valorProposto}" readonly="true"/>
+						
+						<h:outputLabel value="% Proposta / Vl Apto:" for="propSobreApto"/>
+						<h:outputText id="propSobreApto" value="#{negociacaoBean.negociacao.percentualProposto}">
+							<f:convertNumber type="percent" maxFractionDigits="2"/>
+						</h:outputText>
+						
+						<h:outputLabel value="Valor Imobiliária:" for="vlImobiliaria"/>
+						<p:inputText id="vlImobiliaria" value="#{negociacaoBean.negociacao.valorImobiliaria}" readonly="true"/>
+						
+						<h:outputLabel value="% Imob / Vl Proposto:" for="imobSobreProp"/>
+						<h:outputText id="imobSobreProp" value="#{negociacaoBean.negociacao.percentualImobiliaria}">
+							<f:convertNumber type="percent" maxFractionDigits="2"/>
+						</h:outputText>
+						
+						<h:outputLabel value="Valor Proprietário:" for="vlProprietario"/>
+						<p:inputText id="vlProprietario" value="#{negociacaoBean.negociacao.valorProprietario}" readonly="true"/>
+						
+						</h:panelGrid>
+					</p:fieldset>
+				</h:form>
+			</p:tab>
+			
+			<p:tab id="tabFollowUps" title="Follow Ups" rendered="#{acessoBean.acessoFollowUpNegociacao >= 1}">
+				<h:form id="listaFollowUps">
+				<p:dataTable id="listaFollowUps" value="#{negociacaoBean.negociacao.followUps}" var="f"
+						emptyMessage="Não há histórico para esta negociação." rows="15" rowKey="#{f}"
+						paginator="true">
+					<p:column headerText="Funcionário" width="25%">
+						<h:outputText value="#{f.funcionario.nome}"/>
+					</p:column>
+					<p:column headerText="Data" width="15%">
+						<h:outputText value="#{f.data.time}">
+							<f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Descrição" width="50%">
+						<h:outputText value="#{f.descricao}" />
+					</p:column>
+				</p:dataTable>
+				</h:form>
+			</p:tab>
+			
+			<p:tab id="tabOutrosApartamentos" title="Outros Aptos no Condomínio">
+				<p:dataTable id="listaApartamentos" value="#{negociacaoBean.negociacao.apartamento.torre.condominio.torres}" var="t" emptyMessage="Nenhum Apartamento Cadastrado">
+				
+					<p:columnGroup type="header">
+			            <p:row>
+			                <p:column rowspan="2" headerText="Torre" />
+			                <p:column colspan="4" headerText="Sobre o Apartamento" />
+			            </p:row>
+			            <p:row>
+			            	<p:column headerText="Tipo"/>
+			            	<p:column headerText="Nº Apto"/>
+			            	<p:column headerText="Área Útil"/>
+			            	<p:column headerText="Dorms"/>
+			            	<p:column headerText="Suítes"/>
+			                <p:column headerText="Valor Venda" />
+			                <p:column headerText="Valor Condomínio" />
+			            </p:row>
+			        </p:columnGroup>
+				
+					<p:subTable value="#{t.apartamentos}" var="a">
+						<f:facet name="header">
+			                <h:outputText value="#{t.nome}" />
+			            </f:facet>
+						<p:column>
+							<h:outputText value="#{a.id}"/>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{a.tipoApartamento}"/>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{a.numeroApartamento}"/>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{a.areaUtil.areaUtil}"/>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{a.planta.dormitorios}"/>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{a.planta.suites}"/>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{a.valorVenda}"/>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{a.valorCondominio}"/>
+						</p:column>
+					</p:subTable>
+				</p:dataTable>
+			</p:tab>
+		</p:tabView>
+		
+	</ui:define>
+</ui:composition>
+</html>

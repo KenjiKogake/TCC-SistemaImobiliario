@@ -1,0 +1,38 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<h:head/>
+	<h:body>
+		<h:outputStylesheet library="css" name="forms.css"/>
+		<div id="cabecalho">
+			<h:form id="formTema">
+				<p:themeSwitcher value="#{temaBean.tema}">
+					<p:ajax/>
+					<f:selectItems value="#{temaBean.temas}"/>
+				</p:themeSwitcher>
+			</h:form>
+			<h:form>
+				<h:outputLabel value="Bem vindo #{acessoClienteBean.cliente}"/>
+				<p:menubar>
+					<p:submenu label="Menu">
+						<p:menuitem value="Home" action="bem-vindo?faces-redirect=true"/>
+						<p:menuitem value="Logoff" action="#{acessoClienteBean.logoff}"/>
+					</p:submenu>
+				</p:menubar>
+			</h:form>
+			<h1><ui:insert name="titulo"></ui:insert></h1>
+		</div>
+		
+		<div id="conteudo">
+			<ui:insert name="conteudo">
+			</ui:insert>
+			
+		</div>
+		
+		<div id="rodape">
+			<ui:insert name="texto"></ui:insert>
+		</div>
+	</h:body>
+</html>

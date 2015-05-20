@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+			<f:metadata>
+				<f:event listener="#{funcionarioBean.onActionView}" type="preRenderView"/>
+			</f:metadata>
+		</ui:define>
+		<ui:define name="conteudo">
+			
+			<h:form id="formLista" rendered="#{acessoBean.acessoFuncionario >= 1}">
+				<p:fieldset legend="Funcionários">
+					<p:commandButton update=":formCadastro:funcionarioDetail" onclick="PF('funcionarioDialog').show()" 
+						value="Novo Funcionário" actionListener="#{funcionarioBean.limparFuncionario}" rendered="#{acessoBean.acessoFuncionario >= 3}"/>
+					<br/>
+
+					<p:dataTable id="listaFuncionarios" value="#{funcionarioBean.funcionarios}" var="f" widgetVar="listaFuncionarios"
+						emptyMessage="Nenhum funcionario Cadastrado" paginator="true" rows="15"
+						selectionMode="single" selection="#{funcionarioBean.funcionario}" rowKey="#{f}"
+						filteredValue="#{funcionarioBean.funcionariosFiltrados}">
+						
+						<p:ajax event="rowSelect" update=":formCadastro:funcionarioDetail"
+							oncomplete="PF('funcionarioDialog').show()"/>
+						
+						<p:column headerText="Id" width="5%" filterBy="#{f.id}" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="banco">
+							<h:outputText value="#{f.id}"/>
+						</p:column>
+						<p:column headerText="Nome" width="20%" filterBy="#{f.nome} #{f.sobrenome}" filterMatchMode="contains"
+							filterStyle="width: 90%;" sortBy="#{f.nome} #{f.sobrenome}">
+							<h:outputText value="#{f.nome} #{f.sobrenome}"/>
+						</p:column>
+						<p:column headerText="Cargo" width="12%" filterBy="#{f.cargo.descricao}" filterMatchMode="exact"
+							sortBy="#{f.cargo.descricao}">
+							<f:facet name="filter">
+				                <p:selectOneMenu onchange="PF('listaFuncionarios').filter()" style="width: 90%;">
+				                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+				                    <f:selectItems value="#{cargoBean.cargos}" />
+				                </p:selectOneMenu>
+				            </f:facet>
+							<h:outputText value="#{f.cargo.descricao}"/>
+						</p:column>
+						<p:column headerText="Departamento" width="12%" filterBy="#{f.departamento.descricao}" filterMatchMode="exact" filterStyle="width: 90%;"
+							sortBy="#{f.departamento.descricao}">
+							<f:facet name="filter">
+				                <p:selectOneMenu onchange="PF('listaFuncionarios').filter()" style="width: 90%;">
+				                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+				                    <f:selectItems value="#{departamentoBean.departamentos}" />
+				                </p:selectOneMenu>
+				            </f:facet>
+							<h:outputText value="#{f.departamento.descricao}"/>
+						</p:column>
+						<p:column headerText="Cel Pessoal" width="13%" filterBy="#{f.celular}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{f.celular}"/>
+						</p:column>
+						<p:column headerText="Cel Empresarial" width="13%" filterBy="#{f.numeroEmpresarial.numero}" filterMatchMode="exact">
+							<f:facet name="filter">
+				                <p:selectOneMenu onchange="PF('listaFuncionarios').filter()" style="width: 90%;">
+				                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+				                    <f:selectItems value="#{numeroEmpresarialBean.numeros}" />
+				                </p:selectOneMenu>
+				            </f:facet>
+							<h:outputText value="#{f.numeroEmpresarial.numero}"/>
+						</p:column>
+						<p:column headerText="Ramal" width="7%" filterBy="#{f.ramal}" filterMatchMode="contains"  filterStyle="width: 90%;"
+							sortBy="#{f.ramal}">
+							<h:outputText value="#{f.ramal}"/>
+						</p:column>
+						<p:column headerText="Status" width="12%" filterBy="#{f.status}" filterMatchMode="exact" filterStyle="width: 90%;"
+							sortBy="#{f.status}">
+						<f:facet name="filter">
+			                <p:selectOneButton onchange="PF('listaFuncionarios').filter()" style="width: 90%;">
+			                    <f:selectItems value="#{enumBean.status}"/>
+			                </p:selectOneButton>
+			            </f:facet>	
+							<h:outputText value="#{f.status}"/>
+						</p:column>
+					</p:dataTable>
+				</p:fieldset>
+			</h:form>
+			
+			
+			<p:dialog header="Cadastro de Funcionário" widgetVar="funcionarioDialog" id="funcionarioDialog"
+				draggable="false" modal="true" width="800" closeOnEscape="true">
+				<h:form id="formCadastro">
+				<p:outputPanel id="funcionarioDetail">
+					<p:messages id="msgs"/>
+						<p:accordionPanel id="funcionarioPanel" multiple="false" activeIndex="0"> 
+							
+							<p:tab title="Informações Pessoais">
+								<h:panelGrid columns="2" columnClasses="title, value">
+									<h:outputLabel value="Id:" for="id" rendered="#{!funcionarioBean.novo}"/>
+									<p:inputText id="id" value="#{funcionarioBean.funcionario.id}" 
+										rendered="#{!funcionarioBean.novo}" disabled="true"/>									
+									
+									<h:outputLabel value="Nome:" for="nome"/>
+									<p:inputText id="nome" value="#{funcionarioBean.funcionario.nome}"
+										required="true" requiredMessage="Campo obrigatório - Nome.">
+										<p:ajax event="blur" update=":formCadastro:msgs"/>	
+									</p:inputText>
+		
+									<h:outputLabel value="Sobrenome:" for="sobrenome"/>
+									<p:inputText id="sobrenome" value="#{funcionarioBean.funcionario.sobrenome}"
+										required="true" requiredMessage="Campo obrigatório - Sobrenome.">
+										<p:ajax event="blur" update=":formCadastro:msgs"/>	
+									</p:inputText>
+									
+									<h:outputLabel value="Data de Nascimento:" for="dataNascimento"/>
+									<p:calendar id="dataNascimento" value="#{funcionarioBean.funcionario.dataNascimento.time}" effect="fold" navigator="true"
+													pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" locale="br"/>
+												
+									<h:outputLabel value="CPF:" for="cpf"/>
+									<p:inputMask mask="999.999.999-99" id="cpf" value="#{funcionarioBean.funcionario.cpf}" validatorMessage="CPF Inválido.">
+										<p:ajax event="blur" update=":formCadastro:msgs"/>	
+									</p:inputMask>
+									
+									<h:outputLabel value="RG:" for="rg"/>
+									<p:inputText id="rg" value="#{funcionarioBean.funcionario.rg}"/>
+									
+									<h:outputLabel value="Telefone:" for="telefone"/>
+									<p:inputMask mask="(99)9999-9999" id="telefone" value="#{funcionarioBean.funcionario.telefone}"/>
+									
+									<h:outputLabel value="Celular:" for="celular"/>
+									<p:inputMask mask="(99)99999-9999" id="celular" value="#{funcionarioBean.funcionario.celular}"
+										required="true" requiredMessage="Campo obrigatório - Celular.">
+										<p:ajax event="blur" update=":formCadastro:msgs"/>
+									</p:inputMask>
+									
+									<h:outputLabel value="Banco:" for="banco"/>
+									<p:inputText id="banco" value="#{funcionarioBean.funcionario.banco}"/>
+									
+									<h:outputLabel value="Agência:" for="agencia"/>
+									<p:inputText id="agencia" value="#{funcionarioBean.funcionario.agencia}"/>
+									
+									<h:outputLabel value="Conta:" for="conta"/>
+									<p:inputText id="conta" value="#{funcionarioBean.funcionario.conta}"/>
+									
+								</h:panelGrid>
+							</p:tab>
+							
+							<p:tab title="Informações Profissionais">
+								<h:panelGrid columns="2" columnClasses="title, value">
+									
+									<h:outputLabel value="Contratação:" for="contratacao"/>
+									<p:calendar id="contratacao" value="#{funcionarioBean.funcionario.dataEntrada}" effect="fold" navigator="true"
+													pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" locale="br"/>
+												
+									<h:outputLabel value="Demissão:" for="demissao" rendered="#{!funcionarioBean.ativo}"/>	
+									<p:calendar id="demissao" value="#{funcionarioBean.funcionario.dataSaida}" effect="fold" navigator="true"
+													pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" locale="br" rendered="#{!funcionarioBean.ativo}"/>
+									
+									<h:outputLabel value="Nível de Acesso:" for="nivelAcesso"/>
+									<p:selectOneMenu id="nivelAcesso" value="#{funcionarioBean.funcionario.nivelAcesso}"  converter="entityConverter">
+										<f:selectItems value="#{nivelAcessoBean.niveisAcesso}" var="n" itemLabel="#{n.descricao}"/>
+									</p:selectOneMenu>
+									
+									<h:outputLabel value="Pode Atender Compradores:" for="atendeCompradores"/>
+									<p:selectBooleanCheckbox id="atendeCompradores" value="#{funcionarioBean.funcionario.podeAtenderComprador}"/>
+									
+									<h:outputLabel value="Cargo:" for="cargo"/>
+									<p:selectOneMenu id="cargo" value="#{funcionarioBean.funcionario.cargo}"  converter="entityConverter">
+										<f:selectItem itemLabel="Selecione um Cargo" itemValue=""/>
+										<f:selectItems value="#{cargoBean.cargos}" var="c" itemLabel="#{c.descricao}"/>
+									</p:selectOneMenu>
+		
+									<h:outputLabel value="Departamento:" for="departamento"/>
+									<p:selectOneMenu id="departamento" value="#{funcionarioBean.funcionario.departamento}"  converter="entityConverter">
+										<f:selectItem itemLabel="Selecione um Departamento" itemValue=""/>
+										<f:selectItems value="#{departamentoBean.departamentos}" var="d" itemLabel="#{d.descricao}"/>
+									</p:selectOneMenu>
+								
+									<h:outputLabel value="Email:" for="email"/>
+									<p:inputText id="email" value="#{funcionarioBean.funcionario.email}" validatorMessage="E-mail Inválido">
+										<p:ajax event="blur" update=":formCadastro:msgs"/>
+									</p:inputText>
+								
+									<h:outputLabel value="Aparelho Empresarial:" for="aparelhoEmpresa"/>
+									<p:inplace label="#{funcionarioBean.funcionario.aparelhoEmpresarial eq null? 'Clique para Selecionar' :
+ 										funcionarioBean.funcionario.aparelhoEmpresarial.imei}">
+									<p:selectOneMenu id="aparelhoEmpresa" value="#{funcionarioBean.funcionario.aparelhoEmpresarial}"  converter="entityConverter"
+										filter="true" filterMatchMode="startsWith" effect="fade" styleClass="width:160px" var="aparelho"> 
+										<f:selectItem itemLabel="Selecione um aparelho" itemValue=""/>
+										<f:selectItems value="#{aparelhoEmpresarialBean.aparelhosDisponiveis}" var="a" itemLabel="#{a.imei}"/>
+										<p:column style="width:10px">
+											<h:outputText value="#{aparelho.aparelho}"/>
+										</p:column>
+										<p:column>
+											<h:outputText value="#{aparelho.imei}"/>
+										</p:column>
+									</p:selectOneMenu>
+									</p:inplace>
+									
+									<h:outputLabel value="Número Empresarial:" for="numeroEmpresa"/>
+									<p:inplace label="#{funcionarioBean.funcionario.numeroEmpresarial eq null? 'Clique para Selecionar' :
+										 funcionarioBean.funcionario.numeroEmpresarial.numero}">
+										<p:selectOneMenu id="numeroEmpresa" value="#{funcionarioBean.funcionario.numeroEmpresarial}"  converter="entityConverter"
+										filter="true" filterMatchMode="contains" effect="fade" styleClass="width:160px"> 
+											<f:selectItem itemLabel="Selecione um número" itemValue=""/>
+											<f:selectItems value="#{numeroEmpresarialBean.numerosDisponiveis}" var="n" itemLabel="#{n.numero}"/>
+										</p:selectOneMenu>
+									</p:inplace>
+									
+									<h:outputLabel value="Ramal:" for="ramal"/>
+									<p:inputText id="ramal" value="#{funcionarioBean.funcionario.ramal}" maxlength="6"/>
+							
+									<h:outputLabel value="Usuário:" for="usuario"/>
+									<p:inputText id="usuario" value="#{funcionarioBean.funcionario.usuario}">
+										<p:ajax event="blur" update=":formCadastro:msgs"/>
+									</p:inputText>
+									
+									<h:outputLabel value="Obrigar Troca de Senha:" for="alterarSenha"/>
+									<p:selectBooleanCheckbox id="alterarSenha" value="#{funcionarioBean.funcionario.alterarSenhaProximoAcesso}"/>
+							
+								</h:panelGrid>
+							</p:tab>
+							
+						</p:accordionPanel>
+						<p:commandButton value="#{funcionarioBean.novo? 'Gravar' : 'Atualizar'}" process=":formCadastro" update=":formLista:listaFuncionarios :formCadastro" 
+							actionListener="#{funcionarioBean.gravar}" rendered="#{acessoBean.acessoFuncionario >= 2}"/>
+						<p:commandButton value="#{funcionarioBean.ativo ? 'Desativar' : 'Reativar'}" process=":funcionarioDialog" update=":formLista:listaFuncionarios :formCadastro" actionListener="#{funcionarioBean.mudarStatus}" 
+							rendered="#{!funcionarioBean.novo and acessoBean.acessoFuncionario >= 4}"/>
+						<p:commandButton value="Resetar Senha" process=":funcionarioDialog" update=":formLista:listaFuncionarios :formCadastro" actionListener="#{funcionarioBean.resetarSenha}" 
+							rendered="#{!funcionarioBean.novo and acessoBean.acessoFuncionario >= 2}"/>
+				</p:outputPanel>
+				</h:form>
+			</p:dialog>
+			
+		</ui:define>
+	</ui:composition>
+</html>

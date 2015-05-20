@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="_template.xhtml">
+
+	<ui:define name="titulo">
+		<f:metadata>
+			<f:viewParam name="negociacao" value="#{fechamentoBean.negociacaoId}" />
+			<f:viewParam name="id" value="#{fechamentoBean.id}"/>
+			<f:event listener="#{fechamentoBean.onActionView}" type="preRenderView" />
+			<f:event listener="#{fechamentoBean.onActionViewNegociacao}" type="preRenderView" />
+		</f:metadata>
+	</ui:define>
+	
+	<ui:define name="conteudo">
+		<p:growl id="growl"/>
+		
+		
+		<p:tabView id="tabView" dynamic="true" cache="true" >
+			
+			<p:tab id="tabFechamento" title="Fechamento" rendered="#{acessoBean.acessoFechamento >= 1}"> 
+				<h:form id="formFechamento">
+					<p:messages id="msgs"/>
+					<h:panelGrid columns="2" columnClasses="title, value">
+						<h:outputLabel value="Data do Fechamento:" for="dataFechamento"/>
+						<p:calendar id="dataFechamento" value="#{fechamentoBean.fechamento.dataFechamento.time}"  effect="fold" navigator="true"
+							pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" locale="br" maxdate="#{fechamentoBean.today.time}"/>
+						
+						<h:outputLabel value="Status:" for="statusFechamento"/>
+						<h:outputText id="statusFechamento" value="#{fechamentoBean.fechamento.status}"/>
+					</h:panelGrid>
+					
+					<p:fieldset legend="Comprador">	
+						<h:panelGrid id="panelComprador" columns="4" columnClasses="title, value, title, value">
+						
+						<h:outputLabel value="Nome:" for="nomeComprador"/>
+						<h:outputText id="nomeComprador" value="#{fechamentoBean.fechamento.negociacao.comprador.cliente.nome}"/>
+						
+						<h:outputLabel value="E-mail:" for="emailComprador"/>
+						<h:outputText id="emailComprador" value="#{fechamentoBean.fechamento.negociacao.comprador.cliente.email}"/>
+						
+						<h:outputLabel value="Telefone:" for="telefoneComprador"/>
+						<h:outputText id="telefoneComprador" value="#{fechamentoBean.fechamento.negociacao.comprador.cliente.telefone}"/>
+						
+						<h:outputLabel value="Celular:" for="celularComprador"/>
+						<h:outputText id="celularComprador" value="#{fechamentoBean.fechamento.negociacao.comprador.cliente.celular}"/>
+						
+						<h:outputLabel value="Grau de Interesse:" for="grauInteresse"/>
+						<p:rating id="grauInteresse" value="#{fechamentoBean.fechamento.negociacao.comprador.grauInteresse}" readonly="true"/>
+						
+						</h:panelGrid>
+					</p:fieldset>
+					
+					<br/>
+					
+					<p:fieldset legend="Vendedor">	
+						<h:panelGrid id="panelVendedor" columns="4" columnClasses="title, value, title, value">
+						
+						<h:outputLabel value="Nome:" for="nomeVendedor"/>
+						<h:outputText id="nomeVendedor" value="#{fechamentoBean.fechamento.negociacao.apartamento.vendedor.cliente.nome}"/>
+						
+						<h:outputLabel value="E-mail:" for="emailVendedor"/>
+						<h:outputText id="emailVendedor" value="#{fechamentoBean.fechamento.negociacao.apartamento.vendedor.cliente.email}"/>
+						
+						<h:outputLabel value="Celular:" for="celularVendedor"/>
+						<h:outputText id="celularVendedor" value="#{fechamentoBean.fechamento.negociacao.apartamento.vendedor.cliente.celular}"/>
+						
+						<h:outputLabel value="Telefone:" for="telefoneVendedor"/>
+						<h:outputText id="telefoneVendedor" value="#{fechamentoBean.fechamento.negociacao.apartamento.vendedor.cliente.telefone}"/>
+						
+						<h:outputLabel value="Estágio Condomínio:" for="estagioCondominio"/>
+						<h:outputText id="estagioCondominio" value="#{fechamentoBean.fechamento.negociacao.apartamento.torre.condominio.fase}"/>
+						
+						<h:outputLabel value="Condominio:" for="condominio"/>
+						<h:outputText id="condominio" value="#{fechamentoBean.fechamento.negociacao.apartamento.torre.condominio.nome}"/>
+						
+						<h:outputLabel value="Torre:" for="torre"/>
+						<h:outputText id="torre" value="#{fechamentoBean.fechamento.negociacao.apartamento.torre.nome}"/>
+						
+						<h:outputLabel value="Endereço:" for="endereco"/>
+						<h:outputText id="endereco" value="#{fechamentoBean.fechamento.negociacao.apartamento.torre.condominio.endereco}"/>
+						
+						<h:outputLabel value="Apartamento:" for="apto"/>
+						<h:outputText id="apto" value="#{fechamentoBean.fechamento.negociacao.apartamento.numeroApartamento}"/>
+						
+						<h:outputLabel value="Status:" for="statusApartamento"/>
+						<h:outputText id="statusApartamento" value="#{fechamentoBean.fechamento.negociacao.apartamento.status}"/>
+						
+						</h:panelGrid>
+					</p:fieldset>
+					
+					<br/>
+					
+					<p:fieldset legend="Proposta">
+						<h:panelGrid id="panelGrid" columns="2" columnClasses="title, value">
+					
+						<h:outputLabel value="Data da Visita:" for="dataVisita" rendered="#{fechamentoBean.fechamento.negociacao.visita != null}"/>
+						<h:outputLabel id="dataVisita" value="#{fechamentoBean.fechamento.negociacao.visita.dataVisita.time}" rendered="#{fechamentoBean.fechamento.negociacao.visita != null}">
+							<f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo"/>
+						</h:outputLabel>
+						
+						<h:outputLabel value="Corretor:" for="corretor"/>
+						<h:outputText id="corretor" value="#{fechamentoBean.fechamento.negociacao.corretor}"/>
+						
+						<h:outputLabel value="Data Proposta:" for="dataProposta"/>
+						<h:outputLabel id="dataProposta" value="#{fechamentoBean.fechamento.negociacao.dataProposta.time}">
+							<f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo"/>
+						</h:outputLabel>
+						
+						<h:outputLabel value="Valor Apartamento:" for="vlApartamento"/>
+						<p:inputText id="vlApartamento" value="#{fechamentoBean.fechamento.negociacao.valorApartamento}" readonly="true"/>
+						
+						<h:outputLabel value="Valor Proposta:" for="vlProposta"/>
+						<p:inputText id="vlProposta" value="#{fechamentoBean.fechamento.negociacao.valorProposto}" readonly="true"/>
+						
+						<h:outputLabel value="% Proposta / Vl Apto:" for="propSobreApto"/>
+						<h:outputText id="propSobreApto" value="#{fechamentoBean.fechamento.negociacao.percentualProposto}">
+							<f:convertNumber type="percent" maxFractionDigits="2"/>
+						</h:outputText>
+						
+						<h:outputLabel value="Valor Imobiliária:" for="vlImobiliaria"/>
+						<p:inputText id="vlImobiliaria" value="#{fechamentoBean.fechamento.negociacao.valorImobiliaria}" readonly="true"/>
+						
+						<h:outputLabel value="% Imob / Vl Proposto:" for="imobSobreProp"/>
+						<h:outputText id="imobSobreProp" value="#{fechamentoBean.fechamento.negociacao.percentualImobiliaria}">
+							<f:convertNumber type="percent" maxFractionDigits="2"/>
+						</h:outputText>
+						
+						<h:outputLabel value="Valor Proprietário:" for="vlProprietario"/>
+						<p:inputText id="vlProprietario" value="#{fechamentoBean.fechamento.negociacao.valorProprietario}" readonly="true"/>
+						
+						</h:panelGrid>
+					</p:fieldset>
+					
+					<p:commandButton id="btGravar" value="Atualizar" rendered="#{acessoBean.acessoNegociacao >= 2 and !fechamentoBean.concluido}"
+						actionListener="#{fechamentoBean.gravar}" process="formFechamento" update="formFechamento"/>
+					<p:commandButton id="btCancelar" value="Cancelar" rendered="#{acessoBean.acessoFechamento >= 2 and fechamentoBean.emAndamento}"
+						actionListener="#{fechamentoBean.cancelar}" process="formFechamento" update="formFechamento">
+						<p:confirm header="Cancelamento" message="Concluir Cancelamento?"/>
+					</p:commandButton>
+
+					<p:commandButton id="btReativar" value="Reativar" rendered="#{acessoBean.acessoFechamento >= 3 and fechamentoBean.cancelado and !fechamentoBean.novo and fechamentoBean.fechamento.negociacao.apartamento.vendendo}"
+						actionListener="#{fechamentoBean.reativar}" process="formFechamento" update="formFechamento"/>	
+					<p:commandButton id="btConcluir" value="Concluir" rendered="#{acessoBean.acessoFechamento >= 2 and fechamentoBean.emAndamento and !fechamentoBean.novo}" 
+						actionListener="#{fechamentoBean.concluir}" process="formFechamento" update="formFechamento">
+						<p:confirm header="Fechamento" message="Concluir Fechamento?"/>
+					</p:commandButton>
+					
+					<p:confirmDialog global="true" showEffect="fade">
+				        <p:commandButton value="Confirmar" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				    </p:confirmDialog>	
+				</h:form>
+			</p:tab>
+			
+			<p:tab id="tabFollowUps" title="Follow Ups" rendered="#{acessoBean.acessoFollowUpFechamento >= 1}">
+				<h:form id="listaFollowUps">
+				<p:commandButton value="Novo Follow-Up" onclick="PF('dialogFollowUp').show()" rendered="#{acessoBean.acessoFollowUpFechamento >= 3}"/>
+				<p:dataTable id="listaFollowUps" value="#{fechamentoBean.fechamento.followUps}" var="f"
+						emptyMessage="Não há histórico para esta negociação." rows="15" rowKey="#{f}"
+						paginator="true">
+					<p:column headerText="Funcionário" width="25%">
+						<h:outputText value="#{f.funcionario.nome}"/>
+					</p:column>
+					<p:column headerText="Data" width="15%">
+						<h:outputText value="#{f.data.time}">
+							<f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Descrição" width="50%">
+						<h:outputText value="#{f.descricao}" />
+					</p:column>
+				</p:dataTable>
+				</h:form>
+			</p:tab>
+			
+			<p:tab id="tabFollowUpsNegociacao" title="Follow Ups Negociação" rendered="#{acessoBean.acessoFollowUpNegociacao >= 1}">
+				<h:form id="listaFollowUpsNegociacao">
+				<p:dataTable id="listaFollowUps" value="#{fechamentoBean.fechamento.negociacao.followUps}" var="f"
+						emptyMessage="Não há histórico para esta negociação." rows="15" rowKey="#{f}"
+						paginator="true">
+					<p:column headerText="Funcionário" width="25%">
+						<h:outputText value="#{f.funcionario.nome}"/>
+					</p:column>
+					<p:column headerText="Data" width="15%">
+						<h:outputText value="#{f.data.time}">
+							<f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Descrição" width="50%">
+						<h:outputText value="#{f.descricao}" />
+					</p:column>
+				</p:dataTable>
+				</h:form>
+			</p:tab>
+			
+			<p:tab id="tabOutrosApartamentos" title="Outros Aptos no Condomínio">
+				<p:dataTable id="listaApartamentos" value="#{fechamentoBean.fechamento.negociacao.apartamento.torre.condominio.torres}" var="t" emptyMessage="Nenhum Apartamento Cadastrado">
+				
+					<p:columnGroup type="header">
+			            <p:row>
+			                <p:column rowspan="2" headerText="Torre" />
+			                <p:column colspan="8" headerText="Sobre o Apartamento" />
+			            </p:row>
+			            <p:row>
+			            	<p:column headerText="Tipo"/>
+			            	<p:column headerText="Nº Apto"/>
+			            	<p:column headerText="Área Útil"/>
+			            	<p:column headerText="Dorms"/>
+			            	<p:column headerText="Suítes"/>
+			                <p:column headerText="Valor Venda" />
+			                <p:column headerText="Valor Condomínio" />
+			                <p:column headerText="Status"/>
+			            </p:row>
+			        </p:columnGroup>
+				
+					<p:subTable value="#{t.apartamentos}" var="a">
+						<f:facet name="header">
+			                <h:outputText value="#{t.nome}" />
+			            </f:facet>
+						<p:column>
+							<h:outputText value="#{a.id}"/>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{a.tipoApartamento}"/>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{a.numeroApartamento}"/>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{a.areaUtil.areaUtil}"/>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{a.planta.dormitorios}"/>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{a.planta.suites}"/>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{a.valorVenda}"/>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{a.valorCondominio}"/>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{a.status}"/>
+						</p:column>
+					</p:subTable>
+				</p:dataTable>
+			</p:tab>
+			
+		</p:tabView>
+		
+		<!-- 		Dialog para adicionar um follow up -->
+		<p:dialog header="Follow-Up" id="dialogFollowUp" widgetVar="dialogFollowUp" resizable="false"
+			draggable="false" modal="true" closeOnEscape="true" dynamic="true" width="50%">
+			<h:form id="formFollowUp">
+				<p:messages id="msgsFollowUp" />
+				<h:panelGrid id="panelFollowUp" columns="2" columnClasses="title, value">
+					
+					<h:outputLabel value="Follow Up:" for="followUp" />
+					<p:inputTextarea id="followUp" value="#{followUpFechamentoBean.followUp.descricao}" autoResize="true"
+						rows="3">
+						<p:ajax event="blur" update="msgsFollowUp" />
+					</p:inputTextarea>
+
+					<p:commandButton value="Salvar" action="#{followUpFechamentoBean.gravar(fechamentoBean.fechamento)}"
+						update="formFollowUp :tabView:listaFollowUps" oncomplete="PF('dialogFollowUp').hide()" rendered="#{acessoBean.acessoFollowUpFechamento >= 2}"/>
+				</h:panelGrid>	
+			</h:form>
+		</p:dialog>
+		
+	</ui:define>
+</ui:composition>
+</html>

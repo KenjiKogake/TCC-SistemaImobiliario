@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+			<f:metadata>
+				<f:event listener="#{visitaBean.atualizaLista}" type="preRenderView" />
+			</f:metadata>
+		</ui:define>
+		<ui:define name="conteudo">
+		
+		<p:growl id="growl"/>
+		
+		<h:form id="formLista" rendered="#{acessoBean.acessoVisita >= 1}">
+			<p:fieldset legend="Visitas" style="width:100%">
+				<p:dataTable id="listaVisitas" widgetVar="listaVisitas" value="#{visitaBean.visitas}" var="v" 
+					emptyMessage="Nenhuma Visita encontrada" paginator="true" rows="15"
+					selectionMode="single" selection="#{visitaBean.visita}" rowKey="#{v.id}"
+					filteredValue="#{visitaBean.visitasFiltradas}">
+					
+					<p:ajax event="rowSelect" update=":formVisita" oncomplete="PF('dialogVisita').show()"/>
+
+					<p:column headerText="Id" width="5%" filterBy="#{v.id}" filterMatchMode="contains" filterStyle="width: 90%;"
+						sortBy="#{v.id}">
+						<h:outputText value="#{v.id}"/>
+					</p:column>
+					<p:column headerText="Data da Visita" width="15%" sortBy="dataVisita.time">
+						<h:outputText value="#{v.dataVisita.time}">
+							<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Status" width="10%" filterBy="#{v.status}" filterMatchMode="exact" filterStyle="width: 90%;"
+						sortBy="#{v.status}">
+						<f:facet name="filter">
+			                <p:selectOneMenu onchange="PF('listaVisitas').filter()" style="width: 90%;">
+			                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+			                    <f:selectItems value="#{enumBean.statusVisita}"/>
+			                </p:selectOneMenu>
+			            </f:facet>	
+							<h:outputText value="#{v.status}"/>
+						</p:column>
+						<p:column headerText="Corretor" width="15%" filterBy="#{v.corretor}" filterMatchMode="exact" filterStyle="width: 90%;"
+							sortBy="#{v.corretor.nome}">
+						<f:facet name="filter">
+			                <p:selectOneMenu onchange="PF('listaVisitas').filter()" style="width: 90%;">
+			                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+			                    <f:selectItems value="#{funcionarioBean.corretores}" />
+			                </p:selectOneMenu>
+			            </f:facet>
+							<h:outputText value="#{v.corretor}"/>
+						</p:column>
+						<p:column headerText="Comprador" width="20%" filterBy="#{v.comprador}" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="#{v.comprador.cliente.nome}">
+							<h:outputText value="#{v.comprador}"/>
+						</p:column>
+						<p:column headerText="Condomínio" width="15%" filterBy="#{v.apartamento.torre}" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="#{v.apartamento.torre.condominio.nome} #{v.apartamento.torre.nome}">
+							<h:outputText value="#{v.apartamento.torre}"/>
+						</p:column>
+						<p:column headerText="Endereço" width="20%" filterBy="#{v.apartamento.torre.condominio.endereco}" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="#{v.apartamento.torre.condominio.endereco}">
+							<h:outputText value="#{v.apartamento.torre.condominio.endereco}"/>
+						</p:column>
+						<p:column headerText="Apartamento">
+							<h:outputText value="#{v.apartamento}"/>
+						</p:column>
+				</p:dataTable>
+			</p:fieldset>
+		</h:form>
+
+
+		<!-- 		Dialog para Visualizar Visita -->
+		<p:dialog header="Visita" id="dialogVisita" widgetVar="dialogVisita" resizable="false"
+			draggable="false" modal="true" closeOnEscape="true" dynamic="true" width="50%">
+			<p:ajax event="close" listener="#{visitaBean.atualizaLista}" update="formLista"/>
+			<h:form id="formVisita">
+
+				<ui:include src="/infoVisita.xhtml" />
+
+				<p:commandButton value="Salvar" action="#{visitaBean.gravar}" update="formVisita"
+					rendered="#{acessoBean.acessoVisita >= 2 and visitaBean.pendente}"/>
+				<p:commandButton value="Cancelar" action="#{visitaBean.cancelarVisita}" update="formVisita"
+					rendered="#{!visitaBean.cancelada and !visitaBean.concluida and acessoBean.acessoVisita >= 2 and !visitaBean.novo}"/>
+				<p:commandButton value="Confirmar" action="#{visitaBean.confirmarVisita}" update="formVisita"
+					rendered="#{!visitaBean.confirmada and !visitaBean.concluida and acessoBean.acessoVisita >= 2 and !visitaBean.novo and visitaBean.visita.apartamento.vendendo}"/>
+				<p:commandButton value="Concluir" action="#{visitaBean.concluirVisita}" update="formVisita"
+					rendered="#{visitaBean.confirmada and !visitaBean.concluida and acessoBean.acessoVisita >= 2}"/>
+				<p:commandButton value="Concluir e Criar Negociação" action="#{visitaBean.concluirENegociar}" update="formVisita"
+					rendered="#{visitaBean.confirmada and !visitaBean.concluida and acessoBean.acessoVisita >= 2 and acessoBean.acessoNegociacao >= 3}"/>
+				<p:commandButton value="Criar Negociação" action="#{visitaBean.criarNegociacao}" 
+					rendered="#{visitaBean.concluida and acessoBean.acessoNegociacao >= 3 and visitaBean.visita.apartamento.vendendo}"/>
+			</h:form>
+		</p:dialog>
+			
+		</ui:define>
+	</ui:composition>
+</html>

@@ -1,0 +1,82 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://java.sun.com/xml/ns/persistence 
+	http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+	version="2.0">
+
+	<persistence-unit name="imobiliaria-pu">
+	        <!-- Implementação do JPA, no nosso caso Hibernate -->
+	        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+		
+<!-- 			<non-jta-data-source>java:jboss/datasources/MysqlDS</non-jta-data-source> -->
+			
+<!-- 			<class>br.com.imobiliaria.modelo.Entity</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.EntityPadrao</class> -->
+			
+<!-- 			<class>br.com.imobiliaria.modelo.AcaoFeita</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.AparelhoEmpresarial</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Apartamento</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.ApartamentosFavoritos</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.ApartamentosFavoritosId</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.AreaUtil</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.AvaliacaoVisita</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.CaracteristicaCondominio</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Cargo</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Cliente</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Comprador</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.CompradorDoCorretor</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Condominio</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Construtora</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.ContatoCondominio</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Departamento</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Distrito</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.EstagioAtendimento</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.EventoMidia</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Fechamento</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.FollowUpComprador</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.FollowUpCondominio</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.FollowUpFechamento</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.FollowUpNegociacao</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.FollowUpApartamento</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Foto</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Funcionario</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.InvestimentoMidia</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Midia</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Negociacao</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.NivelAcesso</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.NumeroEmpresarial</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.PerfilInteresse</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.PeriodicidadeVagaGaragem</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.PlantaTorre</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Setorizacao</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.TipoApartamento</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.TipoTransporte</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.TipoVagaGaragem</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Torre</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Transporte</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.TransportesDoCondominio</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.TransportesDoCondominioId</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.VagaGaragem</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Vendedor</class> -->
+<!-- 			<class>br.com.imobiliaria.modelo.Visita</class> -->
+						
+			
+<!-- 			<exclude-unlisted-classes>false</exclude-unlisted-classes> -->
+			
+	        <properties>
+	            <!-- propriedades JDBC -->
+	            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+	            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/imobiliaria" />
+	            <property name="javax.persistence.jdbc.user" value="noite" />
+	            <property name="javax.persistence.jdbc.password" value="nighttcc" />
+	
+	            <!-- configurações especificas Hibernate -->
+	            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect" />
+<!-- 				<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />  -->
+	            <property name="hibernate.hbm2ddl.auto" value="update" />
+	            <property name="hibernate.show_sql" value="false" />
+	            <property name="hibernate.format_sql" value="true" />
+	        </properties>
+	    </persistence-unit>
+	
+</persistence>

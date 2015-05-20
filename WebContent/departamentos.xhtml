@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+		</ui:define>
+		<ui:define name="conteudo">
+				<p:growl id="growl"/>
+				<p:dialog header="Cadastro de Departamento" widgetVar="departamentoDialog" resizable="false" 
+					id="departamentoDialog" draggable="false" modal="true" width="40%" closeOnEscape="true">
+					<h:form id="form">
+					<p:outputPanel id="departamentoDetail">		
+					<p:tabView style="width:100%;" activeIndex="0">		
+					
+						<p:tab title="Departamento">
+							<p:messages id="msgs"/>
+							<h:panelGrid columns="2" columnClasses="title, value">
+								
+								<h:outputLabel value="Id:" for="id" rendered="#{!departamentoBean.novo}"/>
+								<p:inputText id="id" value="#{departamentoBean.departamento.id}" rendered="#{!departamentoBean.novo}" disabled="true"/>
+								
+								<h:outputLabel value="Data Cadastro:" for="dataCadastro" rendered="#{!departamentoBean.novo}"/>
+								<p:inputText id="dataCadastro" value="#{departamentoBean.departamento.dataCadastro.time}" rendered="#{!departamentoBean.novo}" disabled="true">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</p:inputText>
+								
+								<h:outputLabel value="Cadastrante:" for="quemCadastrou" rendered="#{!departamentoBean.novo}"/>
+								<p:inputText id="quemCadastrou" value="#{departamentoBean.departamento.quemCadastrou}" rendered="#{!departamentoBean.novo}" disabled="true"/>
+								
+								<h:outputLabel value="Departamento:" for="departamento"/>
+								<p:inputText id="departamento" value="#{departamentoBean.departamento.descricao}">
+									<p:ajax event="keypress" update="msgs"/>
+								</p:inputText>
+							
+								<p:commandButton value="#{departamentoBean.novo? 'Gravar' : 'Atualizar'}" process=":form:departamentoDetail" update=":formLista:listaDepartamentos :form" 
+									action="#{departamentoBean.gravar}" rendered="#{acessoBean.acessoDepartamento >= 2}"/>
+								<p:commandButton value="Deletar"  process=":form:departamentoDetail" update=":formLista:listaDepartamentos :growl" actionListener="#{departamentoBean.deletar}" 
+									rendered="#{departamentoBean.deletavel and acessoBean.acessoDepartamento >= 4}" oncomplete="PF('departamentoDialog').hide()">
+									<p:confirm header="Excluir" message="Confirma Exclusão?"/>
+								</p:commandButton>
+								
+								<p:confirmDialog global="true" showEffect="fade">
+							        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							    </p:confirmDialog>
+							</h:panelGrid>
+						</p:tab>
+						
+						<p:tab title="Funcionarios" rendered="#{!departamentoBean.semFuncionarios}">
+							<p:dataTable id="listaFuncionarios" value="#{departamentoBean.departamento.funcionarios}" 
+								var="f" paginator="true" rows="6" lazy="true">
+								<p:column headerText="Id" width="15%">
+									<h:outputText value="#{f.id}"/>
+								</p:column>
+								<p:column headerText="Nome" width="50%">
+									<h:outputText value="#{f}"/>
+								</p:column>
+								<p:column headerText="Cargo" width="35%">
+									<h:outputText value="#{f.cargo.descricao}"/>
+								</p:column>
+							</p:dataTable>
+						</p:tab>
+						
+					</p:tabView>
+					</p:outputPanel>
+					</h:form>
+				</p:dialog>
+				
+				<h:form id="formLista" rendered="#{acessoBean.acessoDepartamento >= 1}">	
+					<p:fieldset legend="Departamentos" style="width:65%">
+						
+						<p:commandButton value="Novo Departamento" update=":form:departamentoDetail" onclick="PF('departamentoDialog').show()" 
+							actionListener="#{departamentoBean.limparDepartamento}" rendered="#{acessoBean.acessoDepartamento >= 3}" />
+						<br/><br/>
+							
+						<p:dataTable id="listaDepartamentos" widgetVar="listaDepartamentos" value="#{departamentoBean.departamentos}" var="d" 
+							emptyMessage="Nenhum departamento encontrado" paginator="true" rows="15"
+							selectionMode="single" selection="#{departamentoBean.departamento}" rowKey="#{d}"
+							filteredValue="#{departamentoBean.departamentosFiltrados}">
+							
+							<p:ajax event="rowSelect" update=":form:departamentoDetail" oncomplete="PF('departamentoDialog').show()"/>
+							
+							<p:column headerText="Id" width="10%" sortBy="#{d.id}"
+								filterBy="#{d.id}" filterMatchMode="contains" filterStyle="width: 90%;">
+								<h:outputText value="#{d.id}"/>
+							</p:column>
+							<p:column headerText="Data Cadastro" width="15%" sortBy="#{d.dataCadastro.time}">
+								<h:outputText value="#{d.dataCadastro.time}">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Departamento" width="30%" sortBy="#{d.descricao}"
+								filterBy="#{d.descricao}" filterMatchMode="contains" filterStyle="width: 90%;">
+								<h:outputText value="#{d.descricao}"/>
+							</p:column>
+							<p:column headerText="Funcionarios" width="10%" sortBy="#{d.funcionarios.size()}">
+								<h:outputText value="#{d.funcionarios.size()}"/>
+							</p:column>
+						</p:dataTable>
+					</p:fieldset>
+				</h:form>
+		</ui:define>
+	</ui:composition>
+</html>

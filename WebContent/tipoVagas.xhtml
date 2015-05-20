@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+		</ui:define>
+		<ui:define name="conteudo">
+			<p:growl id="growl"/>
+			
+			<p:dialog header="Cadastro de Tipo de Vaga" widgetVar="tipoVagaDialog" resizable="false" 
+					id="tipoVagaDialog" draggable="false" modal="true" width="40%" closeOnEscape="true">
+					<h:form id="form">
+					<p:outputPanel id="tipoVagaDetail">		
+					<p:tabView style="width:100%;" activeIndex="0">		
+					
+						<p:tab title="Tipo de Vaga">
+							<p:messages id="msgs"/>
+							<h:panelGrid columns="2" columnClasses="title, value">
+								
+								<h:outputLabel value="Id:" for="id" rendered="#{!tipoVagaGaragemBean.novo}"/>
+								<p:inputText id="id" value="#{tipoVagaGaragemBean.tipoVaga.id}" rendered="#{!tipoVagaGaragemBean.novo}" disabled="true"/>
+								
+								<h:outputLabel value="Data Cadastro:" for="dataCadastro" rendered="#{!tipoVagaGaragemBean.novo}"/>
+								<p:inputText id="dataCadastro" value="#{tipoVagaGaragemBean.tipoVaga.dataCadastro.time}" rendered="#{!tipoVagaGaragemBean.novo}" disabled="true">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</p:inputText>
+								
+								<h:outputLabel value="Cadastrante:" for="quemCadastrou" rendered="#{!tipoVagaGaragemBean.novo}"/>
+								<p:inputText id="quemCadastrou" value="#{tipoVagaGaragemBean.tipoVaga.quemCadastrou}" rendered="#{!tipoVagaGaragemBean.novo}" disabled="true"/>
+								
+								<h:outputLabel value="Tipo da Vaga:" for="tipoVaga"/>
+								<p:inputText id="tipoVaga" value="#{tipoVagaGaragemBean.tipoVaga.nome}">
+									<p:ajax event="keypress" update="msgs"/>
+								</p:inputText>
+								
+								<h:outputLabel value="Descrição:" for="descricao"/>
+								<p:inputTextarea id="descricao" value="#{tipoVagaGaragemBean.tipoVaga.descricao}"
+									autoResize="true" rows="2">
+									<p:ajax event="keypress" update="msgs"/>
+								</p:inputTextarea>
+							
+								<p:commandButton value="#{tipoVagaGaragemBean.novo? 'Gravar' : 'Atualizar'}" process=":form:tipoVagaDetail" 
+									update=":formLista:listaTipoVagas :form" action="#{tipoVagaGaragemBean.gravar}" rendered="#{acessoBean.acessoTipoVaga >= 2}"/>
+									
+								<p:commandButton value="Deletar" process=":form:tipoVagaDetail" update=":formLista:listaTipoVagas :form :growl" oncomplete="PF('tipoVagaDialog').hide()"
+									actionListener="#{tipoVagaGaragemBean.deletar}" rendered="#{!tipoVagaGaragemBean.novo and acessoBean.acessoTipoVaga >= 4}">
+									<p:confirm header="Deletar" message="Confirmar?"/>
+								</p:commandButton>
+								
+								<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							    </p:confirmDialog>
+								
+							</h:panelGrid>
+						</p:tab>
+						
+					</p:tabView>
+					</p:outputPanel>
+					</h:form>
+				</p:dialog>
+				
+			<h:form id="formLista" rendered="#{acessoBean.acessoTipoVaga >= 1}">
+				<p:fieldset legend="Tipos de Vaga" style="width:50%">
+					<p:commandButton value="Novo Tipo de Vaga" update=":form:tipoVagaDetail" onclick="PF('tipoVagaDialog').show()" 
+						actionListener="#{tipoVagaGaragemBean.limparTipoVaga}" rendered="#{acessoBean.acessoTipoVaga >= 3}"/>
+					<br/>
+		
+					<p:dataTable id="listaTipoVagas" widgetVar="listaTipoVagas" value="#{tipoVagaGaragemBean.tiposVaga}" var="t" 
+						emptyMessage="Nenhum Tipo de Vaga encontrado" paginator="true" rows="15"
+						selectionMode="single" selection="#{tipoVagaGaragemBean.tipoVaga}" rowKey="#{t}"
+						filteredValue="#{tipoVagaGaragemBean.tiposVagaFiltradas}">
+						
+						<p:ajax event="rowSelect" update=":form:tipoVagaDetail" oncomplete="PF('tipoVagaDialog').show()"/>
+						
+						<p:column headerText="Id" width="10%" sortBy="#{t.id}"
+							filterBy="#{t.id}" filterMatchMode="contains" filterStyle="width:90%;">
+							<h:outputText value="#{t.id}"/>
+						</p:column>
+						<p:column headerText="Data Cadastro" width="15%" sortBy="#{t.dataCadastro.time}">
+							<h:outputText value="#{t.dataCadastro.time}">
+								<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Tipo de Vaga" width="30%" sortBy="#{t.nome}"
+							filterBy="#{t.nome}" filterMatchMode="contains" filterStyle="width:90%;">
+							<h:outputText value="#{t.nome}"/>
+						</p:column>
+						<p:column headerText="Descrição" width="30%" sortBy="#{t.descricao}"
+							filterBy="#{t.descricao}" filterMatchMode="contains" filterStyle="width:90%;">
+							<h:outputText value="#{t.descricao}"/>
+						</p:column>
+					</p:dataTable>
+				</p:fieldset>
+			</h:form>
+
+		</ui:define>
+	</ui:composition>
+</html>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+		</ui:define>
+		<ui:define name="conteudo">
+			<p:growl id="growl"/>
+		
+			<p:dialog header="Cadastro de estágio de atendimento" widgetVar="estagioDialog" resizable="false" 
+				id="estagioDialog" draggable="false" modal="true" width="40%" closeOnEscape="true">
+				<h:form id="form">
+				<p:outputPanel id="estagioDetail" >		
+				<p:tabView style="width:100%;" activeIndex="0">		
+					<p:tab title="Estágio de Atendimento">
+					<p:messages id="msgs"/>
+						<h:panelGrid columns="2" columnClasses="title, value">
+
+							<h:outputLabel value="Id:" for="id" rendered="#{!estagioAtendimentoBean.novo}"/>
+							<p:inputText id="id" value="#{estagioAtendimentoBean.estagioAtendimento.id}" rendered="#{!estagioAtendimentoBean.novo}" disabled="true"/>
+
+							<h:outputLabel value="Data Cadastro:" for="dataCadastro" rendered="#{!estagioAtendimentoBean.novo}"/>
+							<p:inputText id="dataCadastro" value="#{estagioAtendimentoBean.estagioAtendimento.dataCadastro.time}" rendered="#{!estagioAtendimentoBean.novo}" disabled="true">
+								<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+							</p:inputText>
+							
+							<h:outputLabel value="Cadastrante:" for="quemCadastrou" rendered="#{!estagioAtendimentoBean.novo}"/>
+							<p:inputText id="quemCadastrou" value="#{estagioAtendimentoBean.estagioAtendimento.quemCadastrou}" rendered="#{!estagioAtendimentoBean.novo}" disabled="true"/>
+							
+							<h:outputLabel value="Estágio:" for="estagio"/>
+							<p:inputText id="estagio" value="#{estagioAtendimentoBean.estagioAtendimento.estagio}"/>
+							
+							<h:outputLabel value="Descrição:" for="descricao"/>
+							<p:inputTextarea id="descricao" value="#{estagioAtendimentoBean.estagioAtendimento.descricao}"
+								autoResize="true" rows="2">
+								<p:ajax event="keypress" update="msgs"/>
+							</p:inputTextarea>
+							
+							<h:outputLabel value="Horas necessárias:" for="horasNecessarias"/>
+							<p:inputText id="horasNecessarias" value="#{estagioAtendimentoBean.estagioAtendimento.horasNecessarias}"/>
+							
+							<p:commandButton value="#{estagioAtendimentoBean.novo? 'Gravar' : 'Atualizar'}" process=":form:estagioDetail" update=":formLista:listaestagios :form" 
+								action="#{estagioAtendimentoBean.gravar}" rendered="#{acessoBean.acessoEstagioAtendimento >= 2}"/>
+							<p:commandButton value="Deletar" process=":form:estagioDetail" update=":formLista:listaestagios :growl" actionListener="#{estagioAtendimentoBean.deletar}" 
+								rendered="#{estagioAtendimentoBean.deletavel and acessoBean.acessoEstagioAtendimento >= 4}" oncomplete="PF('estagioDialog').hide()">
+								<p:confirm header="Excluir" message="Confirma Exclusão?"/>
+							</p:commandButton>
+							
+							<p:confirmDialog global="true" showEffect="fade" hideEffect="explode">
+						        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						    </p:confirmDialog>
+						</h:panelGrid>
+					</p:tab>
+					
+				</p:tabView>
+				</p:outputPanel>
+				</h:form>
+			</p:dialog>
+				
+			<h:form id="formLista" rendered="#{acessoBean.acessoEstagioAtendimento >= 1}">			
+				<p:fieldset legend="Estágios">
+				
+				<p:commandButton value="Novo Estágio de Atendimento" update=":form:estagioDetail" onclick="PF('estagioDialog').show()" 
+					actionListener="#{estagioAtendimentoBean.limparEstagioAtendimento}" rendered="#{acessoBean.acessoEstagioAtendimento >= 3}"/>
+				<br/>
+				
+					<p:dataTable id="listaestagios" widgetVar="tableestagios" value="#{estagioAtendimentoBean.estagiosAtendimento}" var="e" 
+						emptyMessage="Nenhum estágio de atendimento encontrado" paginator="true" rows="15"
+						selectionMode="single" selection="#{estagioAtendimentoBean.estagioAtendimento}" rowKey="#{e}" 
+						filteredValue="#{estagioAtendimentoBean.estagiosAtendimentoFiltrados}">
+						
+						<p:ajax event="rowSelect" update=":form:estagioDetail"
+							oncomplete="PF('estagioDialog').show()"/>
+						
+						<p:column headerText="Id" width="10%" sortBy="#{e.id}"
+						filterBy="#{e.id}" filterStyle="width:90%" filterMatchMode="contains">
+							<h:outputText value="#{e.id}"/>
+						</p:column>
+						
+						<p:column headerText="Estágio" width="20%" sortBy="#{e.estagio}"
+						filterBy="#{e.estagio}" filterStyle="width:90%" filterMatchMode="contains">
+							<h:outputText value="#{e.estagio}"/>
+						</p:column>
+						<p:column headerText="Data Cadastro" width="15%" sortBy="#{e.dataCadastro.time}">
+								<h:outputText value="#{e.dataCadastro.time}">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+						<p:column headerText="Descrição" sortBy="#{e.descricao}"
+						filterBy="#{e.descricao}" filterStyle="width:90%" filterMatchMode="contains">
+							<h:outputText value="#{e.descricao}"/>
+						</p:column>
+						<p:column headerText="Horas Necessárias" width="15%" sortBy="#{e.horasNecessarias}"
+						filterBy="#{e.horasNecessarias}" filterStyle="width:90%" filterMatchMode="contains">
+							<h:outputText value="#{e.horasNecessarias}"/>
+						</p:column>
+					</p:dataTable>
+				</p:fieldset>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</html>

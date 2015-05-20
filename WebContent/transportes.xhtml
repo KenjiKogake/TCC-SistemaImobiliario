@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+		</ui:define>
+		<ui:define name="conteudo">
+			<p:growl id="growl"/>
+		
+			<p:dialog header="Cadastro de Transportes" widgetVar="transporteDialog" resizable="false" 
+				id="transporteDialog" draggable="false" modal="true" width="60%" closeOnEscape="true" dynamic="true">
+				<h:form id="form">
+				<p:outputPanel id="transporteDetail">		
+				<p:tabView style="width:100%" id="tabView" dynamic="true" cache="true">		
+				
+					<p:tab title="Transporte">
+						<p:messages id="msgs"/>
+						<h:panelGrid columns="2" columnClasses="title, value">
+							
+							<h:outputLabel value="Id:" for="id" rendered="#{!transporteBean.novo}"/>
+							<p:inputText id="id" value="#{transporteBean.transporte.id}" rendered="#{!transporteBean.novo}" disabled="true"/>
+							
+							<h:outputLabel value="Data Cadastro:" for="dataCadastro" rendered="#{!transporteBean.novo}"/>
+							<p:inputText id="dataCadastro" value="#{transporteBean.transporte.dataCadastro.time}" rendered="#{!transporteBean.novo}" disabled="true">
+								<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+							</p:inputText>
+							
+							<h:outputLabel value="Cadastrante:" for="quemCadastrou" rendered="#{!transporteBean.novo}"/>
+							<p:inputText id="quemCadastrou" value="#{transporteBean.transporte.quemCadastrou}" rendered="#{!transporteBean.novo}" disabled="true"/>
+								
+							<h:outputLabel value="Transporte:" for="transporte"/>
+							<p:inputText id="transporte" value="#{transporteBean.transporte.nome}">
+								<p:ajax event="blur" update="msgs"/>
+							</p:inputText>
+							
+							<h:outputLabel value="Tipo:" for="tipo"/>
+							<p:selectOneMenu id="tipo" value="#{transporteBean.transporte.tipo}">
+								<f:selectItems value="#{enumBean.tiposTransporte}"/>
+							</p:selectOneMenu>
+							
+							<h:outputLabel value="Linha:" for="linha"/>
+							<p:inputText id="linha" value="#{transporteBean.transporte.linha}">
+								<p:ajax event="blur" update="msgs"/>
+							</p:inputText>
+							
+							<h:outputLabel value="Endereço:" for="endereco"/>
+							<p:inputTextarea id="endereco" value="#{transporteBean.transporte.endereco}">
+								<p:ajax event="blur" update="msgs"/>
+							</p:inputTextarea>			
+									
+							<p:commandButton value="#{transporteBean.novo? 'Gravar' : 'Atualizar'}" process=":form:transporteDetail" update=":formLista:listaTransportes :form"
+								action="#{transporteBean.gravar}" rendered="#{acessoBean.acessoTransporte >= 2}"/>
+							<p:commandButton value="Deletar" process=":form:transporteDetail" update=":formLista:listaTransportes :growl" actionListener="#{transporteBean.deletar}" 
+								rendered="#{transporteBean.deletavel and acessoBean.acessoTransporte >= 4}" oncomplete="PF('transporteDialog').hide()">
+								<p:confirm header="Excluir" message="Confirma Exclusão?"/>
+							</p:commandButton>
+							
+							<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						    </p:confirmDialog>
+						</h:panelGrid>
+					</p:tab>
+					<p:tab title="Condomínios" rendered="#{!transporteBean.semCondominios}">
+						<p:dataTable id="listaCondominios" value="#{transporteBean.transporte.condominiosDoTransporte}" var="c" 
+							paginator="true" rows="6" lazy="true">
+							<p:column headerText="Condomínio" width="15%">
+								<h:outputText value="#{c.id.condominio.nome}"/>
+							</p:column>
+							<p:column headerText="Endereço" width="20%">
+								<h:outputText value="#{c.id.condominio.endereco}"/>
+							</p:column>
+							<p:column headerText="Distância (metros)" width="25%">
+								<h:outputText value="#{c.distancia}"/>
+							</p:column>
+							<p:column headerText="Tempo (min)" width="20%">
+								<h:outputText value="#{c.tempo}"/>
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+					
+				</p:tabView>
+				</p:outputPanel>
+				</h:form>
+			</p:dialog>
+			
+			<h:form id="formLista" rendered="#{acessoBean.acessoTransporte >= 1}">	
+				<p:fieldset legend="Transportes" style="width:70%">
+				
+					<p:commandButton value="Novo Transporte" update=":form:transporteDetail" onclick="PF('transporteDialog').show()" 
+						actionListener="#{transporteBean.limparTransporte}" rendered="#{acessoBean.acessoTransporte >= 3}"/>
+					<br/>
+				
+					<p:dataTable id="listaTransportes" widgetVar="listaTransportes" value="#{transporteBean.transportes}" var="t" 
+						emptyMessage="Nenhum transporte encontrado" paginator="true" rows="15"
+						selectionMode="single" selection="#{transporteBean.transporte}" rowKey="#{t}"
+						filteredValue="#{transporteBean.transportesFiltrados}">
+						
+						<p:ajax event="rowSelect" update=":form:transporteDetail" oncomplete="PF('transporteDialog').show()"/>
+						
+						<p:column headerText="Id" width="10%" sortBy="#{t.id}"
+							filterBy="#{t.id}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{t.id}"/>
+						</p:column>
+						<p:column headerText="Data Cadastro" width="15%" sortBy="#{t.dataCadastro.time}">
+								<h:outputText value="#{t.dataCadastro.time}">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+						<p:column headerText="Transporte" width="20%" sortBy="#{t.nome}"
+							filterBy="#{t.nome}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{t.nome}"/>
+						</p:column>
+						<p:column headerText="Tipo" width="10%" filterBy="#{t.tipo}" filterMatchMode="exact"
+							sortBy="#{t.tipo}">
+							<f:facet name="filter">
+				                <p:selectOneMenu onchange="PF('listaTransportes').filter()" style="width: 90%;">
+				                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+				                    <f:selectItems value="#{enumBean.tiposTransporte}" />
+				                </p:selectOneMenu>
+				            </f:facet>
+							<h:outputText value="#{t.tipo}"/>
+						</p:column>
+						<p:column headerText="Linha" width="15%" sortBy="#{t.linha}"
+							filterBy="#{t.linha}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{t.linha}"/>
+						</p:column>
+						<p:column headerText="Endereço" width="25%" sortBy="#{t.endereco}"
+							filterBy="#{t.endereco}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{t.endereco}"/>
+						</p:column>
+<!-- 						<p:column headerText="Condomínios" width="15%" sortBy="#{t.condominios.size()}"> -->
+<!-- 							<h:outputText value="#{t.condominios.size()}"/> -->
+<!-- 						</p:column> -->
+					</p:dataTable>
+				</p:fieldset>
+				
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</html>

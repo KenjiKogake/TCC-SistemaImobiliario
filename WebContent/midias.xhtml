@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+		</ui:define>
+		<ui:define name="conteudo">
+		
+			<p:growl id="growl"/>
+			<h:form id="formLista" rendered="#{acessoBean.acessoMidia >= 1}">
+				<p:fieldset legend="Midias" style="width:50%">
+				
+			<p:commandButton id="btNovaMidia" value="Nova Midia" update=":tabView:formMidia :tabView:formInvestimento :tabView" onclick="PF('midiaDialog').show()" 
+				actionListener="#{midiaBean.limparMidia}" rendered="#{acessoBean.acessoMidia >= 3}"/>
+			<br/>
+					<p:dataTable id="listaMidias" widgetVar="listaMidias" value="#{midiaBean.midias}" var="m" 
+						emptyMessage="Nenhuma mídia encontrada" paginator="true" rows="15"
+						selectionMode="single" selection="#{midiaBean.midia}" rowKey="#{m}"
+						filteredValue="#{midiaBean.midiasFiltradas}">
+						
+						<p:ajax event="rowSelect" update=":tabView" oncomplete="PF('midiaDialog').show()"/>
+						
+						<p:column headerText="Id" width="10%" filterBy="#{m.id}" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="#{m.id}">
+							<h:outputText value="#{m.id}"/>
+						</p:column>
+						<p:column headerText="Data Cadastro" width="15%" sortBy="#{m.dataCadastro.time}">
+							<h:outputText value="#{m.dataCadastro.time}">
+								<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Mídia" width="30%" filterBy="#{m.midia}" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="#{m.midia}">
+							<h:outputText value="#{m.midia}"/>
+						</p:column>
+						<p:column headerText="Status" width="30%" filterBy="#{m.status}" filterMatchMode="exact" filterStyle="width: 90%;"
+							sortBy="#{m.status}">
+						<f:facet name="filter">
+			                <p:selectOneButton onchange="PF('listaMidias').filter()" style="width: 90%;">
+			                    <f:selectItems value="#{enumBean.status}"/>
+			                </p:selectOneButton>
+			            </f:facet>	
+							<h:outputText value="#{m.status}"/>
+						</p:column>
+					</p:dataTable>
+				</p:fieldset>
+			</h:form>
+
+
+			<p:dialog header="Cadastro de Midia" widgetVar="midiaDialog" resizable="false" position="top"
+				id="midiaDialog" draggable="false" modal="true" width="70%" closeOnEscape="true" height="60%" dynamic="true">
+				<p:tabView style="width:100%;" id="tabView" dynamic="true" cache="true">		
+					<p:tab title="Mídia">
+					<h:form id="formMidia">
+						<p:messages id="msgs"/>
+						<h:panelGrid columns="2" columnClasses="title, value">
+							
+							<h:outputLabel value="Id:" for="id" rendered="#{!midiaBean.novo}"/>
+							<p:inputText id="id" value="#{midiaBean.midia.id}" rendered="#{!midiaBean.novo}" disabled="true"/>
+							
+							<h:outputLabel value="Data Cadastro:" for="dataCadastro" rendered="#{!midiaBean.novo}"/>
+							<p:inputText id="dataCadastro" value="#{midiaBean.midia.dataCadastro.time}" rendered="#{!midiaBean.novo}" disabled="true">
+								<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+							</p:inputText>
+							
+							<h:outputLabel value="Cadastrante:" for="quemCadastrou" rendered="#{!midiaBean.novo}"/>
+							<p:inputText id="quemCadastrou" value="#{midiaBean.midia.quemCadastrou}" rendered="#{!midiaBean.novo}" disabled="true"/>
+							
+							<h:outputLabel value="Midia:" for="midia"/>
+							<p:inputText id="midia" value="#{midiaBean.midia.midia}">
+								<p:ajax event="blur" update="msgs"/>
+							</p:inputText>
+						
+							<p:commandButton id="btGravar" value="#{midiaBean.novo? 'Gravar' : 'Atualizar'}" process="formMidia" update=":formLista:listaMidias :tabView" 
+								action="#{midiaBean.gravar}" rendered="#{acessoBean.acessoMidia >= 2}"/>
+							<p:commandButton id="btAtivarDesativar" value="#{midiaBean.ativo? 'Desativar' : 'Reativar'}" process="formMidia" update=":formLista:listaMidias :tabView" actionListener="#{midiaBean.mudarStatus}" 
+								rendered="#{!midiaBean.novo and acessoBean.acessoMidia >= 4}">
+								<p:confirm header="#{midiaBean.ativo? 'Desativar' : 'Reativar'}" message="Confirma?"/>
+							</p:commandButton>
+							
+							<p:confirmDialog global="true" showEffect="fade">
+						        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						    </p:confirmDialog>
+							
+						</h:panelGrid>
+					</h:form>
+					</p:tab>
+				
+					<p:tab title="Investimento" rendered="#{acessoBean.acessoInvestimentoMidia >= 1}">
+					<h:form id="formInvestimento">
+						<p:messages id="msgs"/>
+						<h:panelGrid columns="2" columnClasses="title, value" id="panelGrid">
+							<h:outputLabel value="Mês:" for="mes"/>
+							<p:spinner id="mes" value="#{investimentoMidiaBean.investimentoMidia.mes}" min="1" max="12"/>
+							
+							<h:outputLabel value="Ano:" for="ano"/>
+							<p:spinner id="ano" value="#{investimentoMidiaBean.investimentoMidia.ano}" min="1950"/>
+							
+							<h:outputLabel value="Investimento:" for="investimento"/>
+							<p:inputText id="investimento" value="#{investimentoMidiaBean.investimentoMidia.investimento}">
+								<f:convertNumber currencySymbol="R$" maxFractionDigits="2"/>
+							</p:inputText>
+							
+							<p:commandButton id="btSalvar" value="Gravar" process="formInvestimento" update=":tabView:formInvestimento :tabView:listaInvestimentos"
+								actionListener="#{investimentoMidiaBean.gravar(midiaBean.midia)}" disabled="#{midiaBean.novo}" rendered="#{acessoBean.acessoInvestimentoMidia >= 2}"/>
+							<p:commandButton id="btExcluir" value="Excluir" process="formInvestimento" update=":tabView:formInvestimento :tabView:listaInvestimentos"
+								actionListener="#{investimentoMidiaBean.deletar}" rendered="#{!investimentoMidiaBean.novo and acessoBean.acessoInvestimentoMidia >= 4}" disabled="#{midiaBean.novo}">
+								<p:confirm header="Excluir" message="Confirma Exclusão?"/>
+							</p:commandButton>
+							<p:commandButton id="btNovo" value="Novo" process="formInvestimento" update=":tabView:formInvestimento"
+								actionListener="#{investimentoMidiaBean.novoInvestimento}" disabled="#{midiaBean.novo}"/>
+								
+								
+							<p:confirmDialog global="true" showEffect="fade">
+						        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						    </p:confirmDialog>
+							
+						</h:panelGrid>
+					</h:form>
+							<br/>
+							<p:fieldset legend="Investimentos" rendered="#{acessoBean.acessoInvestimentoMidia >= 1}">	
+							<p:dataTable id="listaInvestimentos" value="#{midiaBean.midia.investimentosMidia}" var="i" widgetVar="listaInvestimentos"
+								emptyMessage="Nenhum Investimento Encontrado" paginator="true" rows="7"
+								selectionMode="single" selection="#{investimentoMidiaBean.investimentoMidia}" rowKey="#{i}">
+								
+								
+								<p:ajax event="rowSelect" update=":tabView:formInvestimento" listener="#{investimentoMidiaBean.onRowSelect}"/>
+								
+								<p:column headerText="Id" width="10%">
+									<h:outputText value="#{i.id}"/>
+								</p:column>
+								<p:column headerText="Mês" width="15%">
+									<h:outputText value="#{i.mes}"/>
+								</p:column>
+								<p:column headerText="Ano" width="30%">
+									<h:outputText value="#{i.ano}"/>
+								</p:column>
+								<p:column headerText="Investimento" width="30%">
+									<h:outputText value="#{i.investimento}"/>
+								</p:column>
+							</p:dataTable>
+							</p:fieldset>
+					</p:tab>
+				
+					<p:tab title="Eventos" id="tabEventos" rendered="#{acessoBean.acessoEventoMidia >= 1}">
+						<p:commandButton value="Novo Evento" update=":formEvento" onclick="PF('eventoDialog').show()" 
+							actionListener="#{eventoMidiaBean.limparEvento}" disabled="#{midiaBean.novo}" rendered="#{acessoBean.acessoEventoMidia >= 3}"/>
+						<h:form id="formListaEventos">	
+							<p:dataTable id="listaEventos" value="#{midiaBean.midia.eventosMidia}" var="e" 
+								emptyMessage="Nenhum Evento Encontrado" selectionMode="single" 
+								selection="#{eventoMidiaBean.eventoMidia}" rowKey="#{e}" paginator="true" rows="10">
+								
+								<p:ajax event="rowSelect" update=":formEvento"
+									oncomplete="PF('eventoDialog').show()"/>
+								
+								<p:column headerText="Id" width="5%">
+									<h:outputText value="#{e.id}"/>
+								</p:column>
+								
+								<p:column headerText="Data Evento" width="15%">
+									<h:outputText value="#{e.dataEvento.time}">
+										<f:convertDateTime pattern="dd/MM/yy" timeZone="America/Sao_Paulo"/>
+									</h:outputText>
+								</p:column>
+								
+								<p:column headerText="Evento" width="20%">
+									<h:outputText value="#{e.evento}"/>
+								</p:column>
+								<p:column headerText="Motivo" width="10%">
+									<h:outputText value="#{e.motivo}"/>
+								</p:column>
+								<p:column headerText="Expectativa" width="15%">
+									<h:outputText value="#{e.expectativa}"/>
+								</p:column>
+							</p:dataTable>
+						</h:form>
+					</p:tab>
+				</p:tabView>
+			</p:dialog>
+
+			<p:dialog header="Cadastro de Eventos" widgetVar="eventoDialog"
+				resizable="false" id="eventoDialog" draggable="false" modal="true" closeOnEscape="true">
+			<h:form id="formEvento">
+			<p:outputPanel id="eventoDetail">
+			<p:messages id="msgsEventos"/>
+			<h:panelGrid columns="2" columnClasses="title, value" id="eventoGrid">
+					<h:outputLabel value="Id" for="idEvento" rendered="#{!eventoMidiaBean.novo}"/>
+					<p:inputText id="idEvento" value="#{eventoMidiaBean.eventoMidia.id}" rendered="#{!eventoMidiaBean.novo}" disabled="true"/>
+					
+					<h:outputLabel value="Data Cadastro:" for="dataCadastro" rendered="#{!eventoMidiaBean.novo}"/>
+					<p:inputText id="dataCadastro" value="#{eventoMidiaBean.eventoMidia.dataCadastro.time}" rendered="#{!eventoMidiaBean.novo}" disabled="true">
+						<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+					</p:inputText>
+					
+					<h:outputLabel value="Cadastrante:" for="quemCadastrou" rendered="#{!eventoMidiaBean.novo}"/>
+					<p:inputText id="quemCadastrou" value="#{eventoMidiaBean.eventoMidia.quemCadastrou}" rendered="#{!eventoMidiaBean.novo}" disabled="true"/>
+					
+					<h:outputLabel value="Data do Evento:" for="dataEvento"/>
+					<p:calendar id="dataEvento" value="#{eventoMidiaBean.eventoMidia.dataEvento.time}" effect="fold" navigator="true"
+													pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" locale="br"/>
+					
+					<h:outputLabel value="Evento" for="evento"/>
+					<p:inputTextarea id="evento" value="#{eventoMidiaBean.eventoMidia.evento}" rows="3" cols="40" maxlength="500" autoResize="true">
+						<p:ajax event="blur" update="msgsEventos"/>
+					</p:inputTextarea>
+					
+					<h:outputLabel value="Motivo" for="motivo"/>
+					<p:inputTextarea id="motivo" value="#{eventoMidiaBean.eventoMidia.motivo}" rows="3" cols="40" maxlength="500" autoResize="true">
+						<p:ajax event="blur" update="msgsEventos"/>
+					</p:inputTextarea>
+					
+					<h:outputLabel value="Expectativa" for="expectativa"/>
+					<p:inputTextarea id="expectativa" value="#{eventoMidiaBean.eventoMidia.expectativa}" rows="3" cols="40" maxlength="500" autoResize="true">
+						<p:ajax event="blur" update="msgsEventos"/>
+					</p:inputTextarea>
+					
+					<p:commandButton value="#{eventoMidiaBean.novo ? 'Gravar' : 'Atualizar'}" action="#{eventoMidiaBean.gravar(midiaBean.midia)}" 
+						process=":formEvento:eventoDetail" update=":tabView:formListaEventos :formEvento" rendered="#{acessoBean.acessoEventoMidia >= 2}"/>
+					<p:commandButton value="Excluir" action="#{eventoMidiaBean.deletar}" process=":formEvento:eventoDetail" rendered="#{!eventoMidiaBean.novo and acessoBean.acessoEventoMidia >= 4}" 
+						update=":tabView:formListaEventos :growl" oncomplete="PF('eventoDialog').hide()">
+						<p:confirm header="Excluir" message="Confirma Exclusão?"/>
+					</p:commandButton>
+					
+					<p:confirmDialog global="true" showEffect="fade">
+				        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				    </p:confirmDialog>
+				</h:panelGrid>
+			</p:outputPanel>
+			</h:form>
+			</p:dialog>
+
+		</ui:define>
+	</ui:composition>
+</html>

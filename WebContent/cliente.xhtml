@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="_template.xhtml">
+
+	<ui:define name="titulo">
+		<f:metadata>
+			<f:viewParam name="id" value="#{clienteBean.id}" />
+			<f:event listener="#{clienteBean.onActionView}" type="preRenderView" />
+		</f:metadata>
+	</ui:define>
+	
+	<ui:define name="conteudo">
+		<p:tabView id="tabView" dynamic="true" cache="true">
+			<p:tab title="Cliente">
+				<h:form id="formCliente" rendered="#{acessoBean.acessoCliente >= 1}">
+					<ui:include src="/cliente_infoBasica.xhtml" />
+					<p:commandButton id="btGravar" value="#{clienteBean.novo ? 'Gravar' : 'Atualizar'}" rendered="#{acessoBean.acessoCliente >= 2}"
+						action="#{clienteBean.gravar}" update="formCliente" process="formCliente"/>
+				</h:form>
+			</p:tab>
+		</p:tabView>
+	</ui:define>
+</ui:composition>
+</html>

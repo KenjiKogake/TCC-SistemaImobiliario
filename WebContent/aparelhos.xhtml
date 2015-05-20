@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="_template.xhtml">
+	<ui:define name="titulo">
+	</ui:define>
+	<ui:define name="conteudo">
+			<p:growl id="growl"/>
+
+			<p:dialog header="Cadastro de Aparelho" widgetVar="aparelhoDialog"
+				resizable="false" id="aparelhoDialog" draggable="false" modal="true" closeOnEscape="true">
+				<h:form id="form">
+				<p:outputPanel id="aparelhoDetail">
+					<p:messages id="msgs"/>
+					<h:panelGrid columns="2" columnClasses="title, value" id="cadastro">
+						<h:outputLabel value="Id:" for="id" rendered="#{!aparelhoEmpresarialBean.novo}" />
+						<p:inputText id="id" value="#{aparelhoEmpresarialBean.aparelho.id}"
+							rendered="#{!aparelhoEmpresarialBean.novo}" disabled="true"/>
+
+						<h:outputLabel value="Data Cadastro:" for="dataCadastro" rendered="#{!aparelhoEmpresarialBean.novo}"/>
+						<p:inputText id="dataCadastro" value="#{aparelhoEmpresarialBean.aparelho.dataCadastro.time}" rendered="#{!aparelhoEmpresarialBean.novo}" disabled="true">
+							<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+						</p:inputText>
+						
+						<h:outputLabel value="Cadastrante:" for="quemCadastrou" rendered="#{!aparelhoEmpresarialBean.novo}"/>
+						<p:inputText id="quemCadastrou" value="#{aparelhoEmpresarialBean.aparelho.quemCadastrou}" rendered="#{!aparelhoEmpresarialBean.novo}" disabled="true"/>
+
+						<h:outputLabel value="Aparelho:" for="aparelho" />
+						<p:inputText id="aparelho"
+							value="#{aparelhoEmpresarialBean.aparelho.aparelho}">
+							<p:ajax event="blur" update="msgs" />
+						</p:inputText>
+
+						<h:outputLabel value="Marca:" for="marca" />
+						<p:inputText id="marca"
+							value="#{aparelhoEmpresarialBean.aparelho.marca}">
+							<p:ajax event="blur" update="msgs" />
+						</p:inputText>
+
+						<h:outputLabel value="IMEI:" for="imei" />
+						<p:inputMask mask="999999-99-999999-9" id="imei"
+							value="#{aparelhoEmpresarialBean.aparelho.imei}">
+							<p:ajax event="blur" update="msgs" />
+						</p:inputMask>
+
+						<h:outputLabel value="Funcionario:" for="funcionario"
+							rendered="#{aparelhoEmpresarialBean.comFuncionario}" />
+						<p:inputText
+							value="#{aparelhoEmpresarialBean.aparelho.funcionario}"
+							rendered="#{aparelhoEmpresarialBean.comFuncionario}"
+							readonly="true" />
+
+						<p:commandButton value="#{aparelhoEmpresarialBean.novo? 'Gravar' : 'Atualizar'}"
+							process=":form:cadastro" update=":formLista:listaAparelhos :form" rendered="#{acessoBean.acessoAparelho >= 2}" 
+							actionListener="#{aparelhoEmpresarialBean.gravar}"/>
+						<p:commandButton value="Deletar" process=":form:cadastro"
+							update=":formLista:listaAparelhos :form :growl" actionListener="#{aparelhoEmpresarialBean.deletar}"
+							rendered="#{aparelhoEmpresarialBean.deletavel and acessoBean.acessoAparelho >= 4}" oncomplete="PF('aparelhoDialog').hide()" >
+							<p:confirm header="Excluir" message="Confirma Exclusão?"/>
+						</p:commandButton>
+						
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="explode">
+					        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					    </p:confirmDialog>
+					</h:panelGrid>
+				</p:outputPanel>
+				</h:form>
+			</p:dialog>
+	
+			<h:form id="formLista" rendered="#{acessoBean.acessoAparelho >= 1}">
+				<p:fieldset legend="Aparelhos" style="width:70%">
+					<p:commandButton value="Novo Aparelho" update=":form:aparelhoDetail" onclick="PF('aparelhoDialog').show()" 
+						actionListener="#{aparelhoEmpresarialBean.limparAparelho}" rendered="#{acessoBean.acessoAparelho >= 3}"/>
+					<br/>
+					<p:dataTable id="listaAparelhos" widgetVar="listaAparelhos"
+						value="#{aparelhoEmpresarialBean.aparelhos}" var="a"
+						emptyMessage="Nenhum aparelho encontrado" paginator="true"
+						rows="15" selectionMode="single" selection="#{aparelhoEmpresarialBean.aparelho}" rowKey="#{a}"
+						filteredValue="#{aparelhoEmpresarialBean.aparelhosFiltrados}">
+	
+						<p:ajax event="rowSelect" update=":form:cadastro"
+							oncomplete="PF('aparelhoDialog').show()" />
+	
+						<p:column headerText="Id" width="10%" sortBy="#{a.id}"
+							filterBy="#{a.id}" filterMatchMode="contains" filterStyle="width:90%;">
+							<h:outputText value="#{a.id}" />
+						</p:column>
+						<p:column headerText="Data Cadastro" width="15%" sortBy="#{a.dataCadastro.time}">
+								<h:outputText value="#{a.dataCadastro.time}">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+						<p:column headerText="Aparelho" width="20%" sortBy="#{a.aparelho}"
+							filterBy="#{a.aparelho}" filterMatchMode="contains" filterStyle="width:90%;">
+							<h:outputText value="#{a.aparelho}" />
+						</p:column>
+						<p:column headerText="Marca" width="15%" sortBy="#{a.marca}"
+							filterBy="#{a.marca}" filterMatchMode="contains" filterStyle="width:90%;">
+							<h:outputText value="#{a.marca}" />
+						</p:column>
+						<p:column headerText="IMEI" width="20%" sortBy="#{a.imei}"
+							filterBy="#{a.imei}" filterMatchMode="contains" filterStyle="width:90%;">
+							<h:outputText value="#{a.imei}" />
+						</p:column>
+						<p:column headerText="Funcionário" width="20%" sortBy="#{a.funcionario}"
+							filterBy="#{a.funcionario}" filterMatchMode="contains" filterStyle="width:90%;">
+							<h:outputText value="#{a.funcionario}" />
+						</p:column>
+					</p:dataTable>
+				</p:fieldset>
+			</h:form>
+		
+	</ui:define>
+</ui:composition>
+</html>

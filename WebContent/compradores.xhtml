@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="_template.xhtml">
+	<ui:define name="titulo">
+		<f:metadata>
+			<f:event listener="#{compradorBean.atualizaLista}" type="preRenderView"/>
+		</f:metadata>
+	</ui:define>
+	<ui:define name="conteudo">
+		<h:form id="formLista" rendered="#{acessoBean.acessoComprador >= 1}">
+			<p:fieldset legend="Compradores">
+			
+				<p:commandButton action="comprador?faces-redirect=true" value="Novo Comprador" rendered="#{acessoBean.acessoComprador >= 3}"/>
+			
+				<p:dataTable id="listaCompradores" value="#{compradorBean.compradores}"
+					var="c" emptyMessage="Nenhum Comprador Encontrado" paginator="true"
+					rows="15" selectionMode="single" selection="#{compradorBean.comprador}"
+					rowKey="#{c.cliente.id}" filteredValue="#{compradorBean.compradoresFiltrados}">
+
+					<p:ajax event="rowSelect" listener="#{compradorBean.onRowSelect}"/>
+					
+					<p:column headerText="Id" width="3%" sortBy="#{c.id}"
+						filterBy="#{c.id}" filterStyle="width:90%" filterMatchMode="contains">
+						<h:outputText value="#{c.id}"/>
+					</p:column>
+					<p:column headerText="Nome" sortBy="#{c.cliente.nome} #{c.cliente.sobrenome}" width="14%"
+						filterBy="#{c.cliente.nome} #{c.cliente.sobrenome}" filterStyle="width:90%" filterMatchMode="contains">
+						<h:outputText value="#{c.cliente.nome} #{c.cliente.sobrenome}"/>
+					</p:column>
+					<p:column headerText="Estágio de Atendimento" width="12%">
+						<h:outputText value="#{c.estagioAtendimento.estagio}"/>
+					</p:column>
+					<p:column headerText="Grau de Interesse" width="7%">
+						<p:rating id="grauInteresse" value="#{c.grauInteresse}" readonly="true"/>
+					</p:column>
+					<p:column headerText="Corretor" width="12%">
+						<h:outputText value="#{c.corretorResponsavel.corretor}"/>
+					</p:column>
+					<p:column headerText="Celular" width="10%" sortBy="#{c.cliente.celular}"
+						filterBy="#{c.cliente.celular}" filterStyle="width:90%" filterMatchMode="contains">
+						<h:outputText value="#{c.cliente.celular}"/>
+					</p:column>
+					<p:column headerText="Telefone" width="10%" sortBy="#{c.cliente.telefone}"
+					filterBy="#{c.cliente.telefone}" filterStyle="width:90%" filterMatchMode="contains">
+						<h:outputText value="#{c.cliente.telefone}" />
+					</p:column>
+					<p:column headerText="E-mail" sortBy="#{c.cliente.email}" width="15%"
+					filterBy="#{c.cliente.email}" filterStyle="width:90%" filterMatchMode="contains">
+						<h:outputText value="#{c.cliente.email}" />
+					</p:column>
+					<p:column headerText="Data Últ. Follow-Up" width="10%">
+						<h:outputText value="#{c.ultimoFollowUp.data.time}">
+							<f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Último Follow-up" width="20%">
+						<h:outputText value="#{c.ultimoFollowUp.descricao}"/>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+			</h:form>
+			
+	</ui:define>
+</ui:composition>
+</html>

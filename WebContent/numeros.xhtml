@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+		</ui:define>
+		<ui:define name="conteudo">
+			<p:growl id="growl"/>
+			
+				<p:dialog header="Cadastro de Números" widgetVar="numeroDialog" resizable="false"
+					id="numeroDialog" draggable="false" modal="true" closeOnEscape="true">
+					<h:form id="form">
+						<p:outputPanel id="numeroDetail">					
+						<p:messages id="msgs"/>
+						<h:panelGrid columns="2" columnClasses="title, value" id="cadastro">
+							
+							<h:outputLabel value="Id:" for="id" rendered="#{!numeroEmpresarialBean.novo}"/>
+							<p:inputText id="id" value="#{numeroEmpresarialBean.numero.id}" rendered="#{!numeroEmpresarialBean.novo}" disabled="true"/>
+							
+							<h:outputLabel value="Data Cadastro:" for="dataCadastro" rendered="#{!numeroEmpresarialBean.novo}"/>
+							<p:inputText id="dataCadastro" value="#{numeroEmpresarialBean.numero.dataCadastro.time}" rendered="#{!numeroEmpresarialBean.novo}" disabled="true">
+								<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+							</p:inputText>
+							
+							<h:outputLabel value="Cadastrante:" for="quemCadastrou" rendered="#{!numeroEmpresarialBean.novo}"/>
+							<p:inputText id="quemCadastrou" value="#{numeroEmpresarialBean.numero.quemCadastrou}" rendered="#{!numeroEmpresarialBean.novo}" disabled="true"/>
+								
+							<h:outputLabel value="Número:" for="numero"/>
+							<p:inputMask mask="(99)99999-9999" value="#{numeroEmpresarialBean.numero.numero}" id="numero">
+								<p:ajax event="blur" update=":form:msgs"/>
+							</p:inputMask>
+
+							<h:outputLabel value="Núm. Chip" for="numeroChip"/>
+							<p:inputText id="numeroChip" value="#{numeroEmpresarialBean.numero.numeroChip}"/>
+							
+							<h:outputLabel value="Funcionario:" for="funcionario" rendered="#{numeroEmpresarialBean.comFuncionario}"/>
+							<p:inputText value="#{numeroEmpresarialBean.numero.funcionario}"
+								rendered="#{numeroEmpresarialBean.comFuncionario}" readonly="true"/>
+		
+							<p:commandButton value="#{numeroEmpresarialBean.novo? 'Gravar' : 'Atualizar'}" process=":form:cadastro" update=":formLista:listaNumeros :form" 
+								actionListener="#{numeroEmpresarialBean.gravar}" rendered="#{acessoBean.acessoNumero >= 2}"/>
+							<p:commandButton value="Deletar" process=":form:cadastro" update=":formLista:listaNumeros :growl" actionListener="#{numeroEmpresarialBean.deletar}" 
+								rendered="#{numeroEmpresarialBean.deletavel and acessoBean.acessoNumero >= 4}" oncomplete="PF('numeroDialog').hide()">
+								<p:confirm header="Excluir" message="Confirma Exclusão?"/>
+							</p:commandButton>
+							
+							<p:confirmDialog global="true" showEffect="fade" hideEffect="explode">
+						        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						    </p:confirmDialog>
+						</h:panelGrid>
+						</p:outputPanel>
+					</h:form>
+				</p:dialog>
+				
+				<h:form id="formLista" rendered="#{acessoBean.acessoNumero >= 1}">
+				<p:fieldset legend="Aparelhos" style="width:50%">
+				
+				<p:commandButton value="Novo número" update=":form:numeroDetail" onclick="PF('numeroDialog').show()" 
+					actionListener="#{numeroEmpresarialBean.limparNumero}" rendered="#{acessoBean.acessoNumero >= 3}"/>
+				<br/>
+					<p:dataTable id="listaNumeros" widgetVar="listaNumeros" value="#{numeroEmpresarialBean.numeros}" var="n" 
+						emptyMessage="Nenhum número encontrado" paginator="true" rows="15"
+						selectionMode="single" selection="#{numeroEmpresarialBean.numero}" rowKey="#{n}"
+						filteredValue="#{numeroEmpresarialBean.numerosFiltrados}">
+						
+						<p:ajax event="rowSelect" update=":form:cadastro" oncomplete="PF('numeroDialog').show()"/>
+						
+						<p:column headerText="Id" width="10%" sortBy="#{n.id}"
+							filterBy="#{n.id}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{n.id}"/>
+						</p:column>
+						<p:column headerText="Data Cadastro" width="15%" sortBy="#{n.dataCadastro.time}">
+								<h:outputText value="#{n.dataCadastro.time}">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+						<p:column headerText="Número" width="25%" sortBy="#{n.numero}"
+							filterBy="#{n.numero}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{n.numero}"/>
+						</p:column>
+						<p:column headerText="Número Chip" width="20%" sortBy="#{n.numeroChip}"
+							filterBy="#{n.numeroChip}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{n.numeroChip}"/>
+						</p:column>
+						<p:column headerText="Funcionário" width="30%" sortBy="#{n.funcionario}"
+							filterBy="#{n.funcionario}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{n.funcionario}"/>
+						</p:column>
+						
+					</p:dataTable>
+				</p:fieldset>
+				</h:form>
+				
+		</ui:define>
+	</ui:composition>
+</html>

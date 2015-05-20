@@ -1,0 +1,87 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<h:head/>
+	<h:body>
+		<h:outputStylesheet library="css" name="forms.css"/>
+		<div id="cabecalho">
+			<h:form id="formTema">
+				<p:themeSwitcher value="#{temaBean.tema}">
+					<p:ajax/>
+					<f:selectItems value="#{temaBean.temas}"/>
+				</p:themeSwitcher>
+			</h:form>
+			<h:form>
+				<p:menubar>
+					<p:submenu label="Menu">
+						<p:menuitem value="Página Inicial" action="dashboard?faces-redirect=true"/>
+						<p:menuitem value="Logout" action="#{funcionarioBean.logoff}"/>
+					</p:submenu>
+					
+					<p:submenu label="Imobiliária">
+						<p:submenu label="Funcionário">
+							<p:menuitem value="Funcionarios" action="funcionarios?faces-redirect=true" rendered="#{acessoBean.acessoFuncionario >= 1}"/>
+							<p:menuitem value="Aparelhos" action="aparelhos?faces-redirect=true" rendered="#{acessoBean.acessoAparelho >= 1}"/>
+							<p:menuitem value="Números" action="numeros?faces-redirect=true" rendered="#{acessoBean.acessoNumero >= 1}"/>
+							<p:menuitem value="Cargos" action="cargos?faces-redirect=true" rendered="#{acessoBean.acessoCargo >= 1}"/>
+							<p:menuitem value="Departamentos" action="departamentos?faces-redirect=true" rendered="#{acessoBean.acessoDepartamento >= 1}"/>
+							<p:menuitem value="Níveis de Acesso" action="niveisAcesso?faces-redirect=true" rendered="#{acessoBean.acessoNivelAcesso >= 1}"/>
+							<p:menuitem value="Ações" action="acoesFeitas?faces-redirect=true" rendered="#{acessoBean.acessoAcoes >= 1}"/>
+						</p:submenu>
+						<p:submenu label="Cliente">
+							<p:menuitem value="Clientes" action="clientes?faces-redirect=true" rendered="#{acessoBean.acessoCliente >= 1}"/>
+							<p:menuitem value="Compradores" action="compradores?faces-redirect=true" rendered="#{acessoBean.acessoComprador >= 1}"/>
+						</p:submenu>
+					</p:submenu>
+					
+					<p:submenu label="Produto">
+						<p:submenu label="Condomínio">
+							<p:menuitem value="Condomínios" action="condominios?faces-redirect=true" rendered="#{acessoBean.acessoCondominio >= 1}"/>
+							<p:menuitem value="Construtoras" action="construtoras?faces-redirect=true" rendered="#{acessoBean.acessoConstrutora >= 1}"/>
+							<p:menuitem value="Distritos" action="distritos?faces-redirect=true" rendered="#{acessoBean.acessoDistrito >= 1}"/>
+							<p:menuitem value="Setorização de Endereços" action="setorizacao?faces-redirect=true" rendered="#{acessoBean.acessoSetorizacao >= 1}"/>
+							<p:menuitem value="Transportes" action="transportes?faces-redirect=true" rendered="#{acessoBean.acessoTransporte >= 1}"/>
+						</p:submenu>
+						<p:submenu label="Apartamento">
+							<p:menuitem value="Apartamentos" action="apartamentos?faces-redirect=true" rendered="#{acessoBean.acessoApartamento >= 1}"/>
+							<p:menuitem value="Solicitações de Alteração" action="solicitacaoAlteracao?faces-redirect=true" rendered="#{acessoBean.acessoFollowUpApartamento >= 1}"/>
+						</p:submenu>
+						<p:submenu label="Visita">
+							<p:menuitem value="Visitas" action="visitas?faces-redirect=true" rendered="#{acessoBean.acessoVisita >= 1}"/>
+						</p:submenu>
+						<p:submenu label="Negociação">
+							<p:menuitem value="Negociações" action="negociacoes?faces-redirect=true" rendered="#{acessoBean.acessoNegociacao >= 1}"/>
+						</p:submenu>
+						<p:submenu label="Fechamento">
+							<p:menuitem value="Fechamentos" action="fechamentos?faces-redirect=true" rendered="#{acessoBean.acessoFechamento >= 1}"/>
+						</p:submenu>
+					</p:submenu>
+					
+					<p:submenu label="Configurações">
+						<p:menuitem value="Periodicidade das Vagas" action="periodicidadeVagas?faces-redirect=true" rendered="#{acessoBean.acessoPeriodicidade >= 1}"/>
+						<p:menuitem value="Tipo das Vagas" action="tipoVagas?faces-redirect=true" rendered="#{acessoBean.acessoTipoVaga >= 1}"/>
+						<p:menuitem value="Tipos de Apartamento" action="tipoApartamento?faces-redirect=true" rendered="#{acessoBean.acessoTipoApartamento >= 1}"/>
+						<p:menuitem value="Estágios de Atendimento" action="estagiosAtendimento?faces-redirect=true" rendered="#{acessoBean.acessoEstagioAtendimento >= 1}"/>
+					</p:submenu>
+					
+					<p:submenu label="Publicidade">
+						<p:menuitem value="Mídias" action="midias?faces-redirect=true" rendered="#{acessoBean.acessoMidia >= 1}"/>
+					</p:submenu>
+				</p:menubar>
+			</h:form>
+			<h1><ui:insert name="titulo"></ui:insert></h1>
+		</div>
+		
+		<div id="conteudo">
+			<ui:insert name="conteudo">
+			</ui:insert>
+			
+		</div>
+		
+		<div id="rodape">
+			<ui:insert name="texto"></ui:insert>
+		</div>
+	</h:body>
+</html>

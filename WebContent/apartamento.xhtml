@@ -1,0 +1,855 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+			<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"/>
+		
+			<f:metadata>
+				<f:viewParam name="id" value="#{apartamentoBean.id}"/>
+				<f:event listener="#{apartamentoBean.onActionView}" type="preRenderView"/>
+<!-- 				<f:viewParam name="idTorre" value="#{apartamentoBean.idTorre}"/> -->
+<!-- 				<f:event listener="#{apartamentoBean.onActionViewTorre}" type="preRenderView"/> -->
+				<f:viewParam name="solicitacao" value="#{followUpApartamentoBean.id}"/>
+				<f:event listener="#{followUpApartamentoBean.onActionView}" type="preRenderView"/>
+			</f:metadata>
+		</ui:define>
+		<ui:define name="conteudo">
+			<p:growl id="growl"/>
+			
+			<p:fieldset legend="Solicitação de Alteração" rendered="#{!followUpApartamentoBean.novo}">
+				<h:form id="form">
+					<h:panelGrid columns="2" columnClasses="title, value">
+						
+						<h:outputLabel value="Id:" for="id"/>
+						<p:commandLink id="id" value="#{followUpApartamentoBean.followUp.id}" target="blank"
+							action="#{followUpApartamentoBean.abrirFicha}"/>
+						
+						<h:outputLabel value="Data:" for="data"/>
+						<h:outputText id="data" value="#{followUpApartamentoBean.followUp.dataFollowUp.time}">
+							<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+						</h:outputText>
+						
+						<h:outputLabel value="Autor:" for="autor"/>
+						<h:outputText id="autor" value="#{followUpApartamentoBean.followUp.autor}"/>
+						
+						<h:outputLabel value="Solicitação:" for="solicitacao"/>
+						<h:outputText id="solicitacao" value="#{followUpApartamentoBean.followUp.followUp}"/>
+					</h:panelGrid>
+					<p:commandButton value="Aprovar" process=":form" update=":form" action="#{followUpApartamentoBean.aprovar}"
+						rendered="#{acessoBean.acessoFollowUpApartamento >= 3}">
+						<p:confirm header="Aprovar" message="Confirma Aprovação?"/>
+					</p:commandButton>
+					
+					<p:commandButton value="Recusar" process=":form" update=":form" action="#{followUpApartamentoBean.recusar}"
+						rendered="#{acessoBean.acessoFollowUpApartamento >= 3}">
+						<p:confirm header="Recusar" message="Confirma Recusa?"/>
+					</p:commandButton>
+
+					<p:confirmDialog global="true" showEffect="fade">
+				        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				    </p:confirmDialog>
+						
+				</h:form>
+			</p:fieldset>
+			
+			<p:tabView id="tabView" dynamic="true" cache="true" style="width:100%;" rendered="#{acessoBean.acessoApartamento >= 1}">
+				
+			<p:tab id="tabApartamento" title="Apartamento">
+				<h:form id="formApartamento" target="blank">
+					<p:messages id="messages"/>
+					<h:panelGrid columns="2" columnClasses="title, value" id="panelInfoGeral">
+						<h:outputLabel value="Id:" for="id" rendered="#{!apartamentoBean.novo}"/>
+						<p:inputText id="id" value="#{apartamentoBean.apartamento.id}" disabled="true" 
+							rendered="#{!apartamentoBean.novo}"/>
+						
+						<h:outputLabel value="Data Cadastro:" for="dataCadastro" rendered="#{!apartamentoBean.novo}"/>
+						<p:inputText id="dataCadastro" value="#{apartamentoBean.apartamento.dataCadastro.time}" rendered="#{!apartamentoBean.novo}" disabled="true">
+							<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+						</p:inputText>
+						
+						<h:outputLabel value="Quem Cadastrou:" for="quemCadastrou" rendered="#{!apartamentoBean.novo}"/>
+						<p:inputText id="quemCadastrou" value="#{apartamentoBean.apartamento.quemCadastrou}" rendered="#{!apartamentoBean.novo}" disabled="true"/>
+				
+						<h:outputLabel value="Data Alteração:" for="dataAlteracao" rendered="#{!apartamentoBean.novo and !(apartamentoBean.apartamento.dataUltimaAlteracao.time eq null)}"/>
+						<p:inputText id="dataAlteracao" value="#{apartamentoBean.apartamento.dataUltimaAlteracao.time}" rendered="#{!apartamentoBean.novo and !(apartamentoBean.apartamento.dataUltimaAlteracao.time eq null)}" disabled="true">
+							<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+						</p:inputText>
+						
+						<h:outputLabel value="Quem Alterou:" for="quemAlterou" rendered="#{!apartamentoBean.novo and !(apartamentoBean.apartamento.quemAlterou eq null)}"/>
+						<p:inputText id="quemAlterou" value="#{apartamentoBean.apartamento.quemAlterou}" rendered="#{!apartamentoBean.novo and !(apartamentoBean.apartamento.quemAlterou eq null)}" disabled="true"/>
+						</h:panelGrid>
+		
+						<p:fieldset legend="Proprietário">
+							<p:commandButton oncomplete="PF('listaClientesDialog').show()" actionListener="#{clienteBean.atualizaLista}" immediate="true" 
+								update=":formListaClientes" value="Selecione um Cliente"/>
+							<br/><br/>
+							<h:panelGrid columns="2" columnClasses="title, value" rendered="#{apartamentoBean.comVendedor}" id="panelGridProp">
+								<h:outputLabel value="Proprietário:" for="proprietario"/>
+								<h:outputText id="proprietario" value="#{apartamentoBean.apartamento.vendedor.cliente}" />
+								
+								<h:outputLabel value="E-mail:" for="emailVendedor"/>
+								<h:outputText id="emailVendedor" value="#{apartamentoBean.apartamento.vendedor.cliente.email}"/>
+								
+								<h:outputLabel value="Celular:" for="celularVendedor"/>
+								<h:outputText id="celularVendedor" value="#{apartamentoBean.apartamento.vendedor.cliente.celular}"/>
+								
+								<h:outputLabel value="Telefone:" for="telefoneVendedor"/>
+								<h:outputText id="telefoneVendedor" value="#{apartamentoBean.apartamento.vendedor.cliente.telefone}"/>
+		
+							</h:panelGrid>
+						</p:fieldset>
+	
+						<br/><br/>
+					
+						<p:fieldset legend="Torre e Condomínio">
+							<p:commandButton oncomplete="PF('listaCondominiosDialog').show()" actionListener="#{condominioBean.atualizaLista}" immediate="true" 
+								update=":formListaCondominios" value="Selecionar torre"/>
+							<br/><br/>
+							<h:panelGrid columns="2" columnClasses="title, value" rendered="#{apartamentoBean.comTorre}">
+								<h:outputLabel value="Condominio:" for="condominio"/>
+								<h:outputText id="condominio" value="#{apartamentoBean.apartamento.torre.condominio.nome}"/>
+								
+								<h:outputLabel value="Torre:" for="torre"/>
+								<h:outputText id="torre" value="#{apartamentoBean.apartamento.torre.nome}"/>
+								
+								<h:outputLabel value="Estágio Condomínio:" for="estagioCondominio"/>
+								<h:outputText id="estagioCondominio" value="#{apartamentoBean.apartamento.torre.condominio.fase}"/>
+								
+								<h:outputLabel value="Endereço:" for="endereco"/>
+								<h:outputText id="endereco" value="#{apartamentoBean.apartamento.torre.condominio.endereco}"/>
+								
+								<h:outputLabel value="Andares:" for="andares"/>
+								<h:outputText id="andares" value="#{apartamentoBean.apartamento.torre.andares}"/>
+								
+								<h:outputLabel value="Aptos por Andar:" for="aptosPorAndar"/>
+								<h:outputText id="aptosPorAndar" value="#{apartamentoBean.apartamento.torre.apartamentosPorAndar}"/>
+								
+							</h:panelGrid>
+						</p:fieldset>
+						
+						<p:fieldset legend="Dados do Apartamento">
+							<h:panelGrid columns="2" columnClasses="title, value" id="panelInfoGeral2">
+							<h:outputLabel value="Planta:" for="planta" rendered="#{!torreBean.novo or !(apartamentoBean.apartamento.torre eq null)}" />
+								<h:panelGrid columns="2" rendered="#{!torreBean.novo or !(apartamentoBean.apartamento.torre eq null)}">
+								<p:selectOneMenu id="planta" value="#{apartamentoBean.apartamento.planta}"  converter="entityConverter" rendered="#{!torreBean.novo or !(apartamentoBean.apartamento.torre eq null)}">
+									<f:selectItem itemLabel="Selecione um Tipo" itemValue="#{null}"/>
+									<f:selectItems value="#{apartamentoBean.apartamento.torre.plantas}" var="p" itemLabel="#{p.descricao}"/>
+									<p:ajax event="change" update=":tabView:formApartamento"/>
+								</p:selectOneMenu>
+								<p:commandButton id="btInfoPlanta" oncomplete="PF('plantaDialog').show()" immediate="true" update=":formPlanta" 
+									rendered="#{!(apartamentoBean.apartamento.planta.id eq null)}" value="Informações da planta"/>
+								</h:panelGrid>
+							
+							<h:outputLabel value="Tipo de Apartamento*:" for="tipoApartamento"/>
+							<p:selectOneMenu id="tipoApartamento" value="#{apartamentoBean.apartamento.tipoApartamento}"  converter="entityConverter">
+								<f:selectItem itemLabel="Selecione um Tipo" itemValue=""/>
+								<f:selectItems value="#{tipoApartamentoBean.tiposApartamento}" var="t" itemLabel="#{t.nome}"/>
+							</p:selectOneMenu>
+													
+							<h:outputLabel value="Área Útil*:" for="areaUtil" rendered="#{!torreBean.novo or !(apartamentoBean.apartamento.torre eq null)}"/>
+							<p:selectOneMenu id="areaUtil" value="#{apartamentoBean.apartamento.areaUtil}"  converter="entityConverter"
+								rendered="#{!torreBean.novo or !(apartamentoBean.apartamento.torre eq null)}" var="area">
+								<f:selectItem itemLabel="Selecione uma Área" itemValue=""/>
+								<f:selectItems value="#{apartamentoBean.apartamento.torre.areasUteis}" var="a" itemLabel="#{a.areaUtil}"/>
+								<p:column style="width:10px">
+									<h:outputText value="#{area.descricao}"/>
+								</p:column>
+								<p:column>
+									<h:outputText value="#{area.areaUtil}"/>
+								</p:column>
+							</p:selectOneMenu>		
+							
+							<h:outputLabel value="Andar*:" for="andar"/>
+							<p:inputText id="andar" value="#{apartamentoBean.apartamento.andar}">
+								<p:ajax event="blur" update=":tabView:formApartamento:messages" />
+							</p:inputText>
+										
+							<h:outputLabel value="Número apto.*:" for="numeroApartamento"/>
+							<p:inputText id="numeroApartamento" value="#{apartamentoBean.apartamento.numeroApartamento}">
+								<p:ajax event="blur" update=":tabView:formApartamento:messages" />
+							</p:inputText>
+							
+							<h:outputLabel value="Situação do Apartamento*:" for="situacaoApartamento"/>
+							<p:selectOneMenu id="situacaoApartamento" value="#{apartamentoBean.apartamento.situacao}">
+								<f:selectItem itemLabel="Selecione uma Situação" itemValue=""/>
+								<f:selectItems value="#{enumBean.situacoesApartamento}"/>
+							</p:selectOneMenu>
+							
+							<h:outputLabel value="Valor de Venda*:" for="valorVenda"/>
+							<p:inputText id="valorVenda" value="#{apartamentoBean.apartamento.valorVenda}">
+								<p:ajax event="blur" update=":tabView:formApartamento:messages" />
+							</p:inputText>
+							
+							<h:outputLabel value="Valor do Condomínio*:" for="valorCondominio"/>
+							<p:inputText id="valorCondominio" value="#{apartamentoBean.apartamento.valorCondominio}">
+								<p:ajax event="blur" update=":tabView:formApartamento:messages" />
+							</p:inputText>
+							
+							<h:outputLabel value="Valor do Iptu*:" for="valorIptu"/>
+							<p:inputText id="valorIptu" value="#{apartamentoBean.apartamento.valorIptu}">
+								<p:ajax event="blur" update=":tabView:formApartamento:messages" />
+							</p:inputText>
+							
+							<h:outputLabel value="Local das Chaves*:" for="localChaves"/>
+							<p:selectOneMenu id="localChaves" value="#{apartamentoBean.apartamento.localChaves}">
+								<f:selectItem itemLabel="Selecione uma Situação" itemValue=""/>
+								<f:selectItems value="#{enumBean.locaisChaves}"/>
+							</p:selectOneMenu>
+							
+							<h:outputLabel value="Comentário Chaves*:" for="comentarioChaves"/>
+							<p:inputText id="comentarioChaves" value="#{apartamentoBean.apartamento.comentarioChaves}">
+								<p:ajax event="blur" update=":tabView:formApartamento:messages" />
+							</p:inputText>
+						</h:panelGrid>
+					</p:fieldset>
+					<p:commandButton value="#{apartamentoBean.novo ? 'Gravar' : 'Atualizar'}" actionListener="#{apartamentoBean.gravar}"
+						process=":tabView:formApartamento" update=":tabView:formApartamento"/>
+					</h:form>
+				</p:tab>
+						
+				<p:tab id="tabStatus" title="Status" rendered="#{!apartamentoBean.novo}">
+					<h:form id="formStatus">
+						<p:messages id="msgsStatus"/>
+						
+						<h:outputLabel value="Status Atual: " style="font-weight: bold"/>
+						<h:outputLabel value="#{apartamentoBean.apartamento.status}"/>
+						
+						<br/><br/>
+						<p:commandButton value="Continua à Venda" action="#{apartamentoBean.statusVendendo}" disabled="#{apartamentoBean.negociando or apartamentoBean.vendemos}"
+							update="formStatus">
+							<p:confirm header="Continua à venda" message="Confirma?"/>
+						</p:commandButton>
+						<p:commandButton value="Vendeu o Apartamento" action="#{apartamentoBean.statusVendeu}" disabled="#{!apartamentoBean.vendendo or apartamentoBean.negociando or apartamentoBean.vendemos}"
+							update="formStatus">
+							<p:confirm header="Vendeu o Apartamento" message="Confirma?"/>
+						</p:commandButton>					
+						<p:commandButton value="Suspendeu a Venda" action="#{apartamentoBean.statusSuspendeu}" disabled="#{!apartamentoBean.vendendo or apartamentoBean.negociando or apartamentoBean.vendemos}"
+							update="formStatus">
+							<p:confirm header="Suspendeu a Venda" message="Confirma?"/>
+						</p:commandButton>
+						<p:commandButton value="Desistiu da Venda" action="#{apartamentoBean.statusDesistiu}" disabled="#{!apartamentoBean.vendendo or apartamentoBean.negociando or apartamentoBean.vendemos}"
+							update="formStatus">
+							<p:confirm header="Desistiu da Venda" message="Confirma?"/>
+						</p:commandButton>
+						<p:commandButton value="Alugou o Apartamento" action="#{apartamentoBean.statusAlugou}" disabled="#{!apartamentoBean.vendendo or apartamentoBean.negociando or apartamentoBean.vendemos}"
+							update="formStatus">
+							<p:confirm header="Alugou o Apartamento" message="Confirma?"/>
+						</p:commandButton>
+						
+						<p:confirmDialog global="true" showEffect="fade">
+					        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					    </p:confirmDialog>
+						<br/><br/>
+					</h:form>
+				</p:tab>		
+						
+				<p:tab id="tabMapa" title="Mapa de Localização">
+					<p:gmap id="mapa" center="#{apartamentoBean.apartamento.torre.condominio.latitude},#{apartamentoBean.apartamento.torre.condominio.longitude}" zoom="17" type="ROADMAP" navigationControl="true" style="width:100%;height:500px;"  model="#{apartamentoBean.markerMap}" />
+				</p:tab>
+						
+				<p:tab id="tabFotos" title="Fotos" rendered="#{!apartamentoBean.novo}">
+					<h:form id="formFotos">
+					    <p:messages id="messages"/>
+					    <p:fileUpload fileUploadListener="#{fileUploadBean.uploadApartamento}" mode="advanced" dragDropSupport="false"
+					                  multiple="false" update="formFotos" sizeLimit="1000000" fileLimit="3" allowTypes="/(\.|\/)(gif|jpe?g|png)$/" />
+					     	<br/>
+					        <h:outputLabel value="Fotos do Apartamento:" rendered="#{apartamentoBean.apartamento.comFotos}"/>
+						    <p:galleria id="galeria" value="#{apartamentoBean.apartamento.fotos}" var="f" panelWidth="500" panelHeight="313" showCaption="true"
+						    	rendered="#{apartamentoBean.apartamento.comFotos}">
+							    <p:graphicImage value="/resources/fotos/#{f.id}" height="100%" width="100%" />
+							</p:galleria>
+							<br/>
+							<h:outputLabel value="Fotos da Torre:" rendered="#{apartamentoBean.apartamento.torre.comFotos}"/>
+							<p:galleria id="galeriaTorre" value="#{apartamentoBean.apartamento.torre.fotos}" var="f" panelWidth="500" panelHeight="313" showCaption="true" 
+								rendered="#{apartamentoBean.apartamento.torre.comFotos}">
+							    <p:graphicImage value="/resources/fotos/#{f.id}" height="100%" width="100%"/>
+							</p:galleria>
+							<br/>
+							<h:outputLabel value="Fotos do Condomínio:" rendered="#{apartamentoBean.apartamento.torre.condominio.comFotos}"/>
+							<p:galleria id="galeriaCondominio" value="#{apartamentoBean.apartamento.torre.condominio.fotos}" var="f" panelWidth="500" panelHeight="313" showCaption="true"
+								rendered="#{apartamentoBean.apartamento.torre.condominio.comFotos}">
+							    <p:graphicImage value="/resources/fotos/#{f.id}" height="100%" width="100%"/>
+							</p:galleria>
+					</h:form>
+				</p:tab>
+								
+				<p:tab id="tabVagasGaragem" title="Vagas de Garagem" rendered="#{!apartamentoBean.novo}">
+					<h:form id="formVagasGaragem">
+						<p:commandButton value="Nova Vaga" onclick="PF('vagaGaragemDialog').show()" 
+							actionListener="#{vagaGaragemBean.limparVagaGaragem}" update=":formVagaGaragem"/>
+							
+						<p:dataTable id="listaVagasGaragem" value="#{apartamentoBean.apartamento.vagas}" var="v" 
+						emptyMessage="Nenhum Transporte Cadastrado" selectionMode="single" 
+						selection="#{vagaGaragemBean.vagaGaragem}" lazy="true" rowKey="#{v}">
+							
+							<p:ajax event="rowSelect" oncomplete="PF('vagaGaragemDialog').show()" update=":formVagaGaragem"/>
+							
+							<p:column headerText="Id" width="5%">
+								<h:outputText value="#{v.id}"/>
+							</p:column>
+							<p:column headerText="Andar" width="15%">
+								<h:outputText value="#{v.andarDaVaga}"/>
+							</p:column>
+							<p:column headerText="Número" width="15%">
+								<h:outputText value="#{v.numeroDaVaga}"/>
+							</p:column>									
+							<p:column headerText="Tipo de Vaga" width="30%">
+								<h:outputText value="#{v.tipoVagaGaragem.nome}"/>
+							</p:column>
+							<p:column headerText="Periodicidade" width="10%">
+								<h:outputText value="#{v.periodicidadeVagaGaragem}"/>
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</p:tab>
+	
+				<p:tab id="tabFollowUps" title="Follow-Ups" rendered="#{!apartamentoBean.novo}">
+					
+					<p:commandButton value="Novo Follow-Up" onclick="PF('dialogFollowUp').show()"/>
+					<h:form id="formFollowUp">
+						<p:dataTable value="#{apartamentoBean.apartamento.followUps}" var="f" 
+							emptyMessage="Nenhum Follow-Up Encontrado">
+							<p:column headerText="Id" width="3%">
+								<h:outputText value="#{f.id}"/>
+							</p:column>
+							<p:column headerText="Data" width="7%">
+								<h:outputText value="#{f.dataFollowUp.time}">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Autor" width="12%">
+								<h:outputText value="#{f.autor}"/>
+							</p:column>
+							<p:column headerText="Tipo" width="8%">
+								<h:outputText value="#{f.tipoFollowUp}"/>
+							</p:column>
+							<p:column headerText="Status" width="6%">
+								<h:outputText value="#{f.status}"/>
+							</p:column>
+							<p:column headerText="Follow-Up" width="25%">
+								<h:outputText value="#{f.followUp}"/>
+							</p:column>
+							<p:column headerText="Data Revisão" width="8%">
+								<h:outputText value="#{f.dataRevisao}">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Quem Revisou" width="12%">
+								<h:outputText value="#{f.revisor}"/>
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</p:tab>
+				
+				<p:tab id="tabCompradoresInteressados" title="Interessados" rendered="#{!apartamentoBean.novo}">
+					<h:form id="formInteressados">
+						<p:dataTable id="listaInteressados" value="#{apartamentoBean.apartamento.clientesInteressados}" var="c"
+							emptyMessage="Não existem compradores interessados neste apartamento." rows="15" rowKey="#{c.id.comprador.id}"
+							paginator="true" selectionMode="single" selection="#{compradorBean.comprador}" style="width:70%;">
+							
+<!-- 							<p:ajax event="rowSelect" update=":formVisita" oncomplete="PF('dialogVisita').show()"/> -->
+							
+							<p:column headerText="Id" width="3%">
+								<h:outputText value="#{c.id.comprador.id}"/>
+							</p:column>
+							<p:column headerText="Comprador" width="30%">
+								<h:outputText value="#{c.id.comprador.cliente}"/>
+							</p:column>
+							<p:column headerText="Grau de Interesse" width="10%">
+								<p:rating id="grauInteresse" value="#{c.id.comprador.grauInteresse}" readonly="true"/>
+							</p:column>
+							<p:column headerText="Estágio Atnd" width="18%">
+								<h:outputText value="#{c.id.comprador.estagioAtendimento.estagio}"/>
+							</p:column>
+							<p:column headerText="Corretor" width="18%">
+								<h:outputText value="#{c.id.comprador.corretorResponsavel.corretor}"/>
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</p:tab>
+				
+				<p:tab id="tabVisitas" title="Visitas" rendered="#{!apartamentoBean.novo and acessoBean.acessoVisita >= 1}">
+					<h:form id="formVisitas">
+						<p:dataTable id="listaVisitas" value="#{apartamentoBean.apartamento.visitas}" var="v"
+							emptyMessage="Não foram feitas visitas neste Apartamento." rows="15" rowKey="#{v}"
+							paginator="true" selectionMode="single" selection="#{visitaBean.visita}">
+							
+							<p:ajax event="rowSelect" update=":formVisita" oncomplete="PF('dialogVisita').show()"/>
+							
+							<p:column headerText="Id" width="3%">
+								<h:outputText value="#{v.id}"/>
+							</p:column>
+							<p:column headerText="Data da Visita">
+								<h:outputText value="#{v.dataVisita.time}">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Status">
+								<h:outputText value="#{v.status}"/>
+							</p:column>
+							<p:column headerText="Corretor">
+								<h:outputText value="#{v.corretor}"/>
+							</p:column>
+							<p:column headerText="Condomínio">
+								<h:outputText value="#{v.apartamento.torre}"/>
+							</p:column>
+							<p:column headerText="Endereço">
+								<h:outputText value="#{v.apartamento.torre.condominio.endereco}"/>
+							</p:column>
+							<p:column headerText="Apartamento">
+								<h:outputText value="#{v.apartamento}"/>
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</p:tab>
+				
+				<p:tab id="tabNegociacoes" title="Negociações" rendered="#{!apartamentoBean.novo and acessoBean.acessoNegociacao >= 1}">
+					<h:form id="formLista" rendered="#{acessoBean.acessoNegociacao >= 1}">
+					<p:fieldset legend="Negociações" style="width:100%">
+						<p:dataTable id="listaNegociacoes" widgetVar="listaNegociacoes" value="#{apartamentoBean.apartamento.negociacoes}" var="n" 
+							emptyMessage="Nenhuma Negociação encontrada" paginator="true" rows="15"
+							selectionMode="single" selection="#{negociacaoBean.negociacao}" rowKey="#{n}">
+							
+							<p:ajax event="rowSelect" listener="#{negociacaoBean.onRowSelect}"/>
+		
+							<p:column headerText="Id" width="5%">
+								<h:outputText value="#{n.id}"/>
+							</p:column>
+							<p:column headerText="Data da Proposta" width="7%">
+								<h:outputText value="#{n.dataProposta.time}">
+									<f:convertDateTime pattern="dd/MM/yy" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Status" width="10%">
+								<f:facet name="filter">
+					                <p:selectOneMenu onchange="PF('listaNegociacoes').filter()" style="width: 90%;">
+					                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+					                    <f:selectItems value="#{enumBean.statusNegociacao}"/>
+					                </p:selectOneMenu>
+					            </f:facet>	
+									<h:outputText value="#{n.status}"/>
+								</p:column>
+								<p:column headerText="Corretor" width="15%">
+								<f:facet name="filter">
+					                <p:selectOneMenu onchange="PF('listaNegociacoes').filter()" style="width: 90%;">
+					                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+					                    <f:selectItems value="#{funcionarioBean.corretores}" />
+					                </p:selectOneMenu>
+					            </f:facet>
+									<h:outputText value="#{n.corretor}"/>
+								</p:column>
+								<p:column headerText="Vendedor" width="10%">
+									<h:outputText value="#{n.apartamento.vendedor}"/>
+								</p:column>
+								<p:column headerText="Condomínio" width="15%">
+									<h:outputText value="#{n.apartamento.torre}"/>
+								</p:column>
+								<p:column headerText="Endereço" width="20%">
+									<h:outputText value="#{n.apartamento.torre.condominio.endereco}"/>
+								</p:column>
+								<p:column headerText="Valor Apto" width="10%">
+									<h:outputText value="#{n.valorApartamento}"/>
+								</p:column>
+								<p:column headerText="Valor Proposto" width="10%">
+									<h:outputText value="#{n.valorProposto}"/>
+								</p:column>
+								<p:column headerText="Apartamento">
+									<h:outputText value="#{n.apartamento}"/>
+								</p:column>
+						</p:dataTable>
+					</p:fieldset>
+					</h:form>
+				</p:tab>
+				
+				<p:tab id="tabFechamentos" title="Fechamentos" rendered="#{!apartamentoBean.novo and acessoBean.acessoFechamento >= 1}">
+				
+					<h:form id="formListaFechamentos">
+						<p:fieldset legend="Fechamentos" style="width:100%">
+							<p:dataTable id="listaFechamentos" widgetVar="listaFechamentos" value="#{apartamentoBean.apartamento.fechamentos}" var="f" 
+								emptyMessage="Nenhum Fechamento encontrado" paginator="true" rows="15"
+								selectionMode="single" selection="#{fechamentoBean.fechamento}" rowKey="#{f.id}">
+							
+								<p:ajax event="rowSelect" listener="#{fechamentoBean.onRowSelect}"/>
+		
+								<p:column headerText="Id" width="5%">
+									<h:outputText value="#{f.id}"/>
+								</p:column>
+								<p:column headerText="Data do Fechamento" width="7%">
+									<h:outputText value="#{f.dataFechamento.time}">
+										<f:convertDateTime pattern="dd/MM/yy" timeZone="America/Sao_Paulo"/>
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Status" width="7%">
+										<h:outputText value="#{f.status}"/>
+								</p:column>
+								<p:column headerText="Corretor" width="15%">
+									<h:outputText value="#{f.negociacao.corretor}"/>
+								</p:column>
+								<p:column headerText="Comprador" width="15%">
+									<h:outputText value="#{f.negociacao.comprador}"/>
+								</p:column>
+								<p:column headerText="Vendedor" width="15%">
+									<h:outputText value="#{f.negociacao.apartamento.vendedor}"/>
+								</p:column>
+								<p:column headerText="Condomínio" width="15%">
+									<h:outputText value="#{f.negociacao.apartamento.torre}"/>
+								</p:column>
+								<p:column headerText="Endereço" width="20%">
+									<h:outputText value="#{f.negociacao.apartamento.torre.condominio.endereco}"/>
+								</p:column>
+								<p:column headerText="Valor Apto" width="10%">
+									<h:outputText value="#{f.negociacao.valorApartamento}"/>
+								</p:column>
+								<p:column headerText="Valor Proposto" width="10%">
+									<h:outputText value="#{f.negociacao.valorProposto}"/>
+								</p:column>
+								<p:column headerText="Apartamento">
+									<h:outputText value="#{f.negociacao.apartamento}"/>
+								</p:column>
+							</p:dataTable>
+						</p:fieldset>
+					</h:form>
+				</p:tab>
+				
+			</p:tabView>
+	
+			<p:dialog header="Seleção do Vendedor" widgetVar="listaClientesDialog" dynamic="true"
+				resizable="false" id="listaClientesDialog" draggable="false" modal="true" closeOnEscape="true">
+				<h:form id="formListaClientes">
+					<p:fieldset legend="Clientes">
+						<p:dataTable id="listaClientes" value="#{clienteBean.clientes}"
+							var="c" emptyMessage="Nenhum cliente Cadastrado" paginator="true"
+							rows="15" selectionMode="single" selection="#{clienteBean.cliente}"
+							rowKey="#{c}" filteredValue="#{clienteBean.clientesFiltrados}">
+		
+							<p:ajax event="rowSelect" update="btConfirmaCliente"/>
+							<p:column headerText="Id" width="5%" sortBy="#{c.id}"
+							filterBy="#{c.id}" filterStyle="width:90%" filterMatchMode="contains">
+								<h:outputText value="#{c.id}"/>
+							</p:column>
+							<p:column headerText="Nome" sortBy="#{c.nome} #{c.sobrenome}"
+							filterBy="#{c.nome} #{c.sobrenome}" filterStyle="width:90%" filterMatchMode="contains">
+								<h:outputText value="#{c.nome} #{c.sobrenome}" />
+							</p:column>
+							<p:column headerText="Celular" width="12%" sortBy="#{c.celular}"
+							filterBy="#{c.celular}" filterStyle="width:90%" filterMatchMode="contains">
+								<h:outputText value="#{c.celular}"/>
+							</p:column>
+							<p:column headerText="Telefone" width="12%" sortBy="#{c.telefone}"
+							filterBy="#{c.telefone}" filterStyle="width:90%" filterMatchMode="contains">
+								<h:outputText value="#{c.telefone}" />
+							</p:column>
+							<p:column headerText="E-mail" sortBy="#{c.email}"
+							filterBy="#{c.email}" filterStyle="width:90%" filterMatchMode="contains">
+								<h:outputText value="#{c.email}" />
+							</p:column>
+							<f:facet name="footer">
+								<p:commandButton id="btConfirmaCliente" value="Confirma seleção" onclick="PF('listaClientesDialog').hide()"
+								action="#{apartamentoBean.onRowSelectVendedor(clienteBean.cliente)}" disabled="#{clienteBean.novo}" 
+								update=":tabView"/>
+							</f:facet>
+						</p:dataTable>
+					</p:fieldset>
+				</h:form>
+			</p:dialog>
+			
+			<p:dialog header="Seleção do Condomínio" widgetVar="listaCondominiosDialog" dynamic="true"
+				resizable="false" id="listaCondominiosDialog" draggable="false" modal="true" closeOnEscape="true" >
+				
+				<h:form id="formListaCondominios">
+					<p:fieldset legend="Condomínios">
+						<p:dataTable id="listaCondominios" widgetVar="listaCondominios" value="#{condominioBean.condominios}" var="c" emptyMessage="Nenhum Condomínio Encontrado"
+							 selectionMode="single" selection="#{condominioBean.condominio}" rowKey="#{c}"
+							 filteredValue="#{condominioBean.condominiosFiltrados}" paginator="true" rows="20" >
+							
+							<p:ajax event="rowSelect" update="btConfirmaCondominio"/>
+	
+							<p:column headerText="Id" width="5%" sortBy="#{c.id}"
+								filterBy="#{c.id}" filterMatchMode="contains" filterStyle="width:90%;">
+								<h:outputText value="#{c.id}"/>
+							</p:column>
+							<p:column headerText="Condomínio" sortBy="#{c.nome}"
+								filterBy="#{c.nome}" filterMatchMode="contains" filterStyle="width: 90%;">
+								<h:outputText value="#{c.nome}"/>
+							</p:column>
+							<p:column headerText="Data Entrega" sortBy="#{c.dataEntrega.time}" width="7%">
+								<h:outputText value="#{c.dataEntrega.time}" >
+									<f:convertDateTime pattern="dd/MM/yyyy"/>
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Endereço" sortBy="#{c.logradouro} #{c.numero}"
+								filterBy="#{c.logradouro}, #{c.numero}" filterMatchMode="contains" filterStyle="width:90%;">
+								<h:outputText value="#{c.logradouro}, #{c.numero}"/>
+							</p:column>
+							<p:column headerText="Bairro" sortBy="#{c.bairro}"
+								filterBy="#{c.bairro}" filterMatchMode="contains" filterStyle="width:90%;">
+								<h:outputText value="#{c.bairro}"/>
+							</p:column>
+							<p:column headerText="Distrito" width="10%" sortBy="#{c.distrito.nome}" filterBy="#{c.distrito.nome}" filterMatchMode="exact">
+								<f:facet name="filter">
+					                <p:selectOneMenu onchange="PF('listaCondominios').filter()" style="width: 90%;">
+					                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+					                    <f:selectItems value="#{distritoBean.distritos}" />
+					                </p:selectOneMenu>
+					            </f:facet>
+								<h:outputText value="#{c.distrito.nome}"/>
+							</p:column>
+							<p:column headerText="Setor" width="5%" sortBy="#{c.setorizacao.nome}" filterBy="#{c.setorizacao.nome}" filterMatchMode="exact">
+								<f:facet name="filter">
+					                <p:selectOneMenu onchange="PF('listaCondominios').filter()" style="width: 90%;">
+					                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+					                    <f:selectItems value="#{setorizacaoBean.setores}" />
+					                </p:selectOneMenu>
+					            </f:facet>
+								<h:outputText value="#{c.setorizacao.nome}"/>
+							</p:column>
+							<f:facet name="footer">
+								<p:commandButton id="btConfirmaCondominio" value="Confirma seleção" action="#{condominioBean.onRowSelectNoRedirect(condominioBean.condominio)}"
+								 onclick="PF('listaTorresDialog').show()" update=":formListaTorres" disabled="#{condominioBean.novo}"/>
+							</f:facet>
+						</p:dataTable>
+					</p:fieldset>
+				</h:form>
+			</p:dialog>
+			
+			<p:dialog header="Seleção da Torre" widgetVar="listaTorresDialog" dynamic="true"
+				resizable="false" id="listaTorresDialog" draggable="false" modal="true" closeOnEscape="true">
+				<p:fieldset legend="Torres">
+					<p:commandButton value="Nova Torre" update=":tabView" onclick="PF('torreDialog').show()" 
+						actionListener="#{torreBean.limparTorre}" />
+					<h:form id="formListaTorres">
+						<p:dataTable id="listaTorres" value="#{condominioBean.condominio.torres}" var="t" 
+							emptyMessage="Nenhuma Torre Cadastrada" selectionMode="single" 
+							selection="#{torreBean.torre}" rowKey="#{t}">
+							
+							<p:ajax event="rowSelect" update="btConfirmaTorre"/>
+							
+							<p:column headerText="Id" width="5%">
+								<h:outputText value="#{t.id}"/>
+							</p:column>
+							<p:column headerText="Data Cadastro" width="15%">
+								<h:outputText value="#{t.dataCadastro.time}">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Nome" width="30%">
+								<h:outputText value="#{t.nome}"/>
+							</p:column>
+							<p:column headerText="Identificação" width="10%">
+								<h:outputText value="#{t.identificacao}"/>
+							</p:column>
+							<p:column headerText="Andares" width="10%">
+								<h:outputText value="#{t.andares}"/>
+							</p:column>
+							<p:column headerText="Aptos/Andar" width="13%">
+								<h:outputText value="#{t.apartamentosPorAndar}"/>
+							</p:column>
+							<f:facet name="footer">
+								<p:commandButton id="btConfirmaTorre" value="Confirma seleção"
+								disabled="#{torreBean.novo}" update=":tabView" action="#{apartamentoBean.onRowSelectTorre(torreBean.torre)}"
+								onclick="@this.hide()" process="@this"/>
+							</f:facet>
+						</p:dataTable>
+					</h:form>
+				</p:fieldset>
+			</p:dialog>
+			
+			<p:dialog header="Vaga de Garagem" widgetVar="vagaGaragemDialog" dynamic="true"
+				resizable="false" id="vagaGaragemDialog" draggable="false" modal="true" closeOnEscape="true">
+				<p:fieldset legend="Vaga de Garagem">
+					<h:form id="formVagaGaragem">
+						<p:messages id="msgsVagas"/>
+						<h:panelGrid columns="2" columnClasses="title,value" id="panelVagaGaragem">
+							<h:outputLabel value="Id:" for="id" rendered="#{!vagaGaragemBean.novo}" />
+							<p:inputText id="id" value="#{vagaGaragemBean.vagaGaragem.id}"
+								readonly="true" disabled="true" rendered="#{!vagaGaragemBean.novo}" />
+												
+							<h:outputLabel value="Data Cadastro:" for="dataCadastro" rendered="#{!vagaGaragemBean.novo}" />
+							<p:inputText id="dataCadastro" value="#{vagaGaragemBean.vagaGaragem.dataCadastro.time}"
+								rendered="#{!vagaGaragemBean.novo}" disabled="true">
+								<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo" />
+							</p:inputText>
+			
+							<h:outputLabel value="Quem Cadastrou:" for="quemCadastrou" rendered="#{!vagaGaragemBean.novo}" />
+							<p:inputText id="quemCadastrou" value="#{vagaGaragemBean.vagaGaragem.quemCadastrou}"
+								rendered="#{!vagaGaragemBean.novo}" disabled="true" />
+													
+							<h:outputLabel value="Tipo da Vaga:" for="tipoVagaGaragem"/>
+							<p:selectOneMenu id="tipoVagaGaragem" value="#{vagaGaragemBean.vagaGaragem.tipoVagaGaragem}"  converter="entityConverter">
+								<f:selectItem itemLabel="Selecione um Tipo de Vaga" itemValue=""/>
+								<f:selectItems value="#{tipoVagaGaragemBean.tiposVaga}" var="t" itemLabel="#{t.nome}"/>
+							</p:selectOneMenu>
+								
+							<h:outputLabel value="Periodicidade da Vaga:" for="periodicidadeVaga"/>
+							<p:selectOneMenu id="periodicidadeVaga" value="#{vagaGaragemBean.vagaGaragem.periodicidadeVagaGaragem}"  converter="entityConverter">
+								<f:selectItem itemLabel="Selecione uma Periodicidade" itemValue=""/>
+								<f:selectItems value="#{periodicidadeVagaGaragemBean.periodicidades}" var="p" itemLabel="#{p.nome}"/>
+							</p:selectOneMenu>
+								
+								<h:outputLabel value="Andar da Vaga:" for="andarVaga"/>
+							<p:inputText id="andarVaga" value="#{vagaGaragemBean.vagaGaragem.andarDaVaga}"/>
+								
+							<h:outputLabel value="Número da Vaga:" for="numeroVaga"/>
+							<p:inputText id="numeroVaga" value="#{vagaGaragemBean.vagaGaragem.numeroDaVaga}"/>
+							
+							<p:commandButton value="#{vagaGaragemBean.novo ? 'Gravar' : 'Atualizar'}" action="#{vagaGaragemBean.gravar(apartamentoBean.apartamento)}"
+					 			update=":tabView:formVagasGaragem formVagaGaragem" process=":formVagaGaragem"/>
+							<p:commandButton value="Excluir" action="#{vagaGaragemBean.deletar}"
+					 			update=":tabView:formVagasGaragem :growl" process=":formVagaGaragem" oncomplete="PF('vagaGaragemDialog').hide()">
+								<p:confirm header="Excluir" message="Confirma?"/>
+							</p:commandButton>
+									
+							<p:confirmDialog global="true" showEffect="fade">
+						        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						    </p:confirmDialog>
+						</h:panelGrid>
+						
+					</h:form>
+				</p:fieldset>
+			</p:dialog>	
+			
+			
+			<p:dialog header="Informações da planta" widgetVar="plantaDialog" height="90%" width="40%"
+				id="plantaDialog" modal="true" dynamic="true" closeOnEscape="true" resizable="false" styleClass="dialog">
+				<h:form id="formPlanta">
+				<p:tabView style="width:100%; height:100%;" activeIndex="0" dynamic="true" cache="true" scrollable="true">		
+					<p:tab title="Informações da Planta">
+				<h:panelGrid columns="2" columnClasses="title, value" id="plantaGrid">
+								<h:outputLabel value="Id" for="idPlanta"/>
+								<p:inputText id="idPlanta" value="#{apartamentoBean.apartamento.planta.id}" disabled="true"/>
+								
+								<h:outputLabel value="Data Cadastro:" for="dataCadastro"/>
+								<p:inputText id="dataCadastro" value="#{apartamentoBean.apartamento.planta.dataCadastro.time}" disabled="true">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</p:inputText>
+								
+								<h:outputLabel value="Quem Cadastrou:" for="quemCadastrou"/>
+								<p:inputText id="quemCadastrou" value="#{apartamentoBean.apartamento.planta.quemCadastrou}" disabled="true"/>
+								
+								<h:outputLabel value="Descrição" for="descricao"/>
+								<p:inputTextarea id="descricao" value="#{apartamentoBean.apartamento.planta.descricao}" autoResize="true" disabled="true"/>
+								
+								<h:outputLabel value="Andares" for="andares"/>
+								<p:inputTextarea id="andares" value="#{apartamentoBean.apartamento.planta.andares}" autoResize="true" disabled="true"/>
+								
+								<h:outputLabel value="Finais" for="finais"/>
+								<p:inputTextarea id="finais" value="#{apartamentoBean.apartamento.planta.finais}" autoResize="true" disabled="true"/>
+								
+								<h:outputLabel value="Dormitório" for="dormitorios"/>
+								<p:spinner id="dormitorios" value="#{apartamentoBean.apartamento.planta.dormitorios}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Suíte" for="suites"/>
+								<p:spinner id="suites" value="#{apartamentoBean.apartamento.planta.suites}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Terceiro Opcional" for="terceiroOpcional"/>
+								<p:spinner id="terceiroOpcional" value="#{apartamentoBean.apartamento.planta.terceiroOpcional}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Closet" for="closet"/>
+								<p:spinner id="closet" value="#{apartamentoBean.apartamento.planta.closets}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Home Office" for="homeOffice"/>
+								<p:spinner id="homeOffice" value="#{apartamentoBean.apartamento.planta.homeOffices}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Varanda" for="varanda"/>
+								<p:spinner id="varanda" value="#{apartamentoBean.apartamento.planta.varandas}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Varanda Gourmet" for="varandaGourmet"/>
+								<p:spinner id="varandaGourmet" value="#{apartamentoBean.apartamento.planta.varandasGourmet}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Sala" for="sala"/>
+								<p:spinner id="sala" value="#{apartamentoBean.apartamento.planta.sala}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Sala de Estar" for="salaDeEstar"/>
+								<p:spinner id="salaDeEstar" value="#{apartamentoBean.apartamento.planta.salaDeEstar}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Sala de Jantar" for="salaDeJantar"/>
+								<p:spinner id="salaDeJantar" value="#{apartamentoBean.apartamento.planta.salaDeJantar}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Cozinha" for="cozinha"/>
+								<p:spinner id="cozinha" value="#{apartamentoBean.apartamento.planta.cozinhas}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Copa" for="copa"/>
+								<p:spinner id="copa" value="#{apartamentoBean.apartamento.planta.copas}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Despensa" for="despensa"/>
+								<p:spinner id="despensa" value="#{apartamentoBean.apartamento.planta.despensas}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Área de Serviço" for="areaDeServico"/>
+								<p:spinner id="areaDeServico" value="#{apartamentoBean.apartamento.planta.areasDeServico}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Banheiro Social" for="banheiroSocial"/>
+								<p:spinner id="banheiroSocial" value="#{apartamentoBean.apartamento.planta.banheirosSociais}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Banheiro de Serviço" for="banheiroServico"/>
+								<p:spinner id="banheiroServico" value="#{apartamentoBean.apartamento.planta.banheirosServico}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Dependência de Empregada" for="dependenciaEmpregada"/>
+								<p:spinner id="dependenciaEmpregada" value="#{apartamentoBean.apartamento.planta.dependenciasEmpregada}" min="0" max="20" disabled="true"/>
+								
+								<h:outputLabel value="Depósito" for="deposito"/>
+								<p:spinner id="deposito" value="#{apartamentoBean.apartamento.planta.depositos}" min="0" max="20" disabled="true"/>
+							
+					</h:panelGrid>
+					</p:tab>
+				</p:tabView>
+				</h:form>
+			</p:dialog>
+	
+	
+			<!-- 		Dialog para adicionar um follow up -->
+			<p:dialog header="Follow-Up" id="dialogFollowUp" widgetVar="dialogFollowUp" resizable="false"
+				draggable="false" modal="true" closeOnEscape="true" dynamic="true" width="50%">
+				<h:form id="formFollowUp">
+					<p:messages id="msgsFollowUp" />
+					<h:panelGrid id="panelFollowUp" columns="2" columnClasses="title, value">
+						<h:outputLabel value="Follow Up:" for="followUp" />
+						<p:inputTextarea id="followUp" value="#{followUpApartamentoBean.followUp.followUp}" autoResize="true"
+							rows="2">
+							<p:ajax event="blur" update="msgsFollowUp" />
+						</p:inputTextarea>
+						
+						<h:outputLabel value="Tipo de Follow-Up:" for="tipoFollowUp" />
+						<p:selectOneMenu id="tipoFollowUp" value="#{followUpApartamentoBean.followUp.tipoFollowUp}">
+							<f:selectItems value="#{enumBean.tiposFollowUp}" />
+						</p:selectOneMenu>
+	
+						<p:commandButton value="Salvar" action="#{followUpApartamentoBean.gravar(apartamentoBean.apartamento)}"
+							update="formFollowUp :tabView:formFollowUp" oncomplete="PF('dialogFollowUp').hide()"/>
+					</h:panelGrid>	
+				</h:form>
+			</p:dialog>
+	
+			<!-- 		Dialog para adicionar um Perfil de Interesse -->
+			<p:dialog header="Visita" id="dialogVisita" widgetVar="dialogVisita" resizable="false"
+				draggable="false" modal="true" closeOnEscape="true" dynamic="true" width="50%">
+				<h:form id="formVisita">
+	
+					<ui:include src="/infoVisita.xhtml"/>
+	
+					<p:commandButton value="Salvar" action="#{visitaBean.gravar}" update="formVisita :tabView:formVisitas"
+						rendered="#{acessoBean.acessoVisita >= 2 and visitaBean.pendente}"/>
+					<p:commandButton value="Cancelar" action="#{visitaBean.cancelarVisita}" update="formVisita :tabView:formVisitas"
+						rendered="#{!visitaBean.cancelada and !visitaBean.concluida and acessoBean.acessoVisita >= 2 and !visitaBean.novo}"/>
+					<p:commandButton value="Confirmar" action="#{visitaBean.confirmarVisita}" update="formVisita :tabView:formVisitas"
+						rendered="#{!visitaBean.confirmada and !visitaBean.concluida and acessoBean.acessoVisita >= 2 and !visitaBean.novo and visitaBean.visita.apartamento.vendendo}"/>
+					<p:commandButton value="Concluir" action="#{visitaBean.concluirVisita}" update="formVisita :tabView:formVisitas"
+						rendered="#{visitaBean.confirmada and !visitaBean.concluida and acessoBean.acessoVisita >= 2}"/>
+					<p:commandButton value="Concluir e Criar Negociação" action="#{visitaBean.concluirENegociar}" update="formVisita"
+						rendered="#{visitaBean.confirmada and !visitaBean.concluida and acessoBean.acessoVisita >= 2 and acessoBean.acessoNegociacao >= 3}"/>
+					<p:commandButton value="Criar Negociação" action="#{visitaBean.criarNegociacao}" 
+						rendered="#{visitaBean.concluida and acessoBean.acessoNegociacao >= 3 and visitaBean.visita.apartamento.vendendo}"/>
+				</h:form>
+			</p:dialog>
+			
+		</ui:define>
+	</ui:composition>
+</html>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+			<f:metadata>
+				<f:event listener="#{condominioBean.atualizaLista}" type="preRenderView"/>
+			</f:metadata>
+			<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"/>
+		</ui:define>
+		<ui:define name="conteudo">
+			<p:tabView id="tabView" dynamic="true" cache="true"  rendered="#{acessoBean.acessoCondominio >= 1}">
+				<p:tab id="tabBuscaSimples" title="Busca Simples">
+				<h:form id="form">
+					<p:commandButton value="Novo Condomínio" action="condominio?faces-redirect=true" rendered="#{acessoBean.acessoCondominio >= 3}"/>
+					<br/>
+					<p:dataTable id="listaCondominios" widgetVar="listaCondominios" value="#{condominioBean.condominios}" var="c" 
+						emptyMessage="Nenhum Condomínio Encontrado" selectionMode="single" selection="#{condominioBean.condominio}" 
+						rowKey="#{c}" filteredValue="#{condominioBean.condominiosFiltrados}" paginator="true" rows="20">
+						
+						<p:ajax event="rowSelect" listener="#{condominioBean.onRowSelect}"/>
+
+						<p:column headerText="Id" width="5%" sortBy="#{c.id}"
+							filterBy="#{c.id}" filterMatchMode="contains" filterStyle="width:90%;">
+							<h:outputText value="#{c.id}"/>
+						</p:column>
+						<p:column headerText="Condomínio" sortBy="#{c.nome}"
+							filterBy="#{c.nome}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{c.nome}"/>
+						</p:column>
+						<p:column headerText="Torres">
+							<h:outputText value="#{c.torres.size()}"/>
+						</p:column>
+						<p:column headerText="Data Entrega" sortBy="#{c.dataEntrega.time}" width="7%">
+							<h:outputText value="#{c.dataEntrega.time}" >
+								<f:convertDateTime pattern="dd/MM/yyyy"/>
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Endereço" sortBy="#{c.logradouro} #{c.numero}"
+							filterBy="#{c.logradouro}, #{c.numero}" filterMatchMode="contains" filterStyle="width:90%;">
+							<h:outputText value="#{c.logradouro}, #{c.numero}"/>
+						</p:column>
+						<p:column headerText="Bairro" sortBy="#{c.bairro}"
+							filterBy="#{c.bairro}" filterMatchMode="contains" filterStyle="width:90%;">
+							<h:outputText value="#{c.bairro}"/>
+						</p:column>
+						<p:column headerText="Distrito" width="10%" sortBy="#{c.distrito.nome}" filterBy="#{c.distrito.nome}" filterMatchMode="exact">
+							<f:facet name="filter">
+				                <p:selectOneMenu onchange="PF('listaCondominios').filter()" style="width: 90%;">
+				                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+				                    <f:selectItems value="#{distritoBean.distritos}" />
+				                </p:selectOneMenu>
+				            </f:facet>
+							<h:outputText value="#{c.distrito.nome}"/>
+						</p:column>
+						<p:column headerText="Setor" width="5%" sortBy="#{c.setorizacao.nome}" filterBy="#{c.setorizacao.nome}" filterMatchMode="exact">
+							<f:facet name="filter">
+				                <p:selectOneMenu onchange="PF('listaCondominios').filter()" style="width: 90%;">
+				                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+				                    <f:selectItems value="#{setorizacaoBean.setores}" />
+				                </p:selectOneMenu>
+				            </f:facet>
+							<h:outputText value="#{c.setorizacao.nome}"/>
+						</p:column>
+					</p:dataTable>
+					</h:form>
+				</p:tab>
+				
+				<p:tab id="tabBuscaNoMapa" title="Ver no Mapa">
+					<p:gmap id="mapa" center="-23.5505199,-46.63330939999999" zoom="12" type="ROADMAP" navigationControl="true" style="width:100%;height:500px;"  model="#{condominioBean.advancedModel}" >
+				
+					<p:ajax event="overlaySelect" listener="#{condominioBean.onMarkerSelect}" />
+ 
+					<p:gmapInfoWindow id="infoWindow">
+	 					<h:panelGrid columns="2" columnClasses="title, value">
+	 						<h:outputLabel value="Id:"/>
+	 						<p:commandLink value="#{condominioBean.condominio.id}" action="#{condominioBean.redirectWithParam}"/>
+		                    
+		                    <h:outputLabel value="Condomínio:"/>
+		                    <h:outputText value="#{condominioBean.condominio.nome}" />
+		                    
+		                    <h:outputLabel value="Endereço:"/>
+		                    <h:outputText value="#{condominioBean.condominio.endereco}"/>
+		                    
+		                    <h:outputLabel value="Torres:"/>
+		                    <h:outputText value="#{condominioBean.condominio.torres.size()}"/>
+	 					</h:panelGrid>
+        			</p:gmapInfoWindow>
+        			
+       				</p:gmap>
+				</p:tab>
+			</p:tabView>
+			
+		</ui:define>
+	</ui:composition>
+</html>

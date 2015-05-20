@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+		</ui:define>
+		<ui:define name="conteudo">
+			<p:growl id="growl"/>
+			
+			<p:tabView id="tabView" dynamic="true" cache="true" style="width:60%;">
+				
+				<p:tab title="Últimos Compradores" rendered="#{acessoBean.acessoComprador >= 1}">
+					<h:form id="formUltimosCompradores">
+						<p:dataTable id="listaCompradores" widgetVar="listaCompradores" value="#{compradorBean.ultimosCadastrados}"
+							var="c" emptyMessage="Nenhum Comprador Encontrado" selectionMode="single" 
+							selection="#{compradorBean.comprador}" rowKey="#{c.id}" 
+							filteredValue="#{compradorBean.compradoresFiltrados}">
+		
+							<p:ajax event="rowSelect" listener="#{compradorBean.onRowSelect}"/>
+							
+							<p:column headerText="Id" width="3%" sortBy="#{c.id}"
+								filterBy="#{c.id}" filterStyle="width:90%" filterMatchMode="contains">
+								<h:outputText value="#{c.id}"/>
+							</p:column>
+							<p:column headerText="Data Cadastro" width="10%" sortBy="#{c.dataCadastro.time}">
+								<h:outputText value="#{c.dataCadastro.time}">
+									<f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Nome" sortBy="#{c.cliente.nome} #{c.cliente.sobrenome}" width="14%"
+								filterBy="#{c.cliente.nome} #{c.cliente.sobrenome}" filterStyle="width:90%" filterMatchMode="contains">
+								<h:outputText value="#{c.cliente.nome} #{c.cliente.sobrenome}"/>
+							</p:column>
+							<p:column headerText="Estágio de Atendimento" width="12%" sortBy="#{c.estagioAtendimento}" 
+								filterBy="#{c.estagioAtendimento}" filterMatchMode="exact">
+								<f:facet name="filter">
+					                <p:selectOneMenu onchange="PF('listaCompradores').filter()" style="width: 90%;">
+					                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+					                    <f:selectItems value="#{estagioAtendimentoBean.estagiosAtendimento}" />
+					                </p:selectOneMenu>
+					            </f:facet>
+								<h:outputText value="#{c.estagioAtendimento.estagio}"/>
+							</p:column>
+							<p:column headerText="Grau de Interesse" width="7%" sortBy="#{c.grauInteresse}">
+								<p:rating id="grauInteresse" value="#{c.grauInteresse}" readonly="true"/>
+							</p:column>
+							<p:column headerText="Corretor" width="12%" sortBy="#{c.corretorResponsavel.corretor}" 
+								filterBy="#{c.corretorResponsavel.corretor}" filterMatchMode="exact">
+								<f:facet name="filter">
+					                <p:selectOneMenu onchange="PF('listaCompradores').filter()" style="width: 90%;">
+					                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+					                    <f:selectItems value="#{funcionarioBean.corretores}" />
+					                </p:selectOneMenu>
+					            </f:facet>
+								<h:outputText value="#{c.corretorResponsavel.corretor}"/>
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</p:tab>
+				
+				<p:tab title="Últimos Apartamentos" rendered="#{acessoBean.acessoApartamento >= 1}">
+					<h:form id="ultimosApartamentos">
+						<p:dataTable id="listaApartamentos" widgetVar="listaApartamentos" value="#{apartamentoBean.ultimosCadastrados}" var="a" 
+							emptyMessage="Nenhum Apartamento Cadastrado" selectionMode="single" 
+							selection="#{apartamentoBean.apartamento}" rowKey="#{a}" filteredValue="#{apartamentoBean.apartamentosFiltrados}">
+							
+							<p:ajax event="rowSelect" listener="#{apartamentoBean.onRowSelect}"/>
+
+							<p:column headerText="Id" width="5%" sortBy="#{a.id}"
+									filterBy="#{a.id}" filterStyle="width:90%" filterMatchMode="contains">
+								<h:outputText value="#{a.id}"/>
+							</p:column>
+							<p:column headerText="Condomínio" width="10%" sortBy="#{a.torre.condominio.nome}"
+								filterBy="#{a.torre.condominio.nome}" filterStyle="width:90%;" filterMatchMode="contains">
+								<h:outputText value="#{a.torre.condominio}"/>
+							</p:column>
+							<p:column headerText="Torre" width="10%" sortBy="#{a.torre.nome}"
+								filterBy="#{a.torre.nome}" filterStyle="width:90%;" filterMatchMode="contains">
+								<h:outputText value="#{a.torre.nome} - #{a.torre.identificacao}"/>
+							</p:column>
+							<p:column headerText="Apt" width="13%" sortBy="#{a.numeroApartamento}"
+								filterBy="#{a.numeroApartamento}" filterStyle="width:90%;" filterMatchMode="contains">
+								<h:outputText value="#{a.numeroApartamento}"/>
+							</p:column>
+							<p:column headerText="Endereço" width="5%" sortBy="#{a.torre.condominio.endereco}"
+								filterBy="#{a.torre.condominio.endereco}" filterStyle="width:90%;" filterMatchMode="contains">
+								<h:outputText value="#{a.torre.condominio.endereco}"/>
+							</p:column>
+							<p:column headerText="Valor" width="7%" sortBy="#{a.valorVenda}"
+								filterBy="#{a.valorVenda}" filterStyle="width:90%;" filterMatchMode="contains">
+								<h:outputText value="#{a.valorVenda}"/>
+							</p:column>
+							<p:column headerText="Valor Condomínio" width="6%" sortBy="#{a.valorCondominio}"
+								filterBy="#{a.valorCondominio}" filterStyle="width:90%;" filterMatchMode="contains">
+								<h:outputText value="#{a.valorCondominio}"/>
+							</p:column>
+							<p:column headerText="Dorms" width="4%" sortBy="#{a.planta.dormitorios}"
+								filterBy="#{a.planta.dormitorios}" filterStyle="width:90%;" filterMatchMode="contains">
+								<h:outputText value="#{a.planta.dormitorios}"/>
+							</p:column>
+							<p:column headerText="Vagas" width="4%" sortBy="#{a.vagas.size()}"
+								filterBy="#{a.vagas.size()}" filterStyle="width:90%;" filterMatchMode="contains">
+								<h:outputText value="#{a.vagas.size()}"/>
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</p:tab>
+			
+				<p:tab title="Últimos Condomínios" rendered="#{acessoBean.acessoCondominio >= 1}">
+					<h:form id="formListaCondominios">
+					<p:dataTable id="listaCondominios" widgetVar="listaCondominios" value="#{condominioBean.ultimosCadastrados}" var="c" 
+						emptyMessage="Nenhum Condomínio Encontrado" selectionMode="single" selection="#{condominioBean.condominio}" 
+						rowKey="#{c}" filteredValue="#{condominioBean.condominiosFiltrados}">
+						
+						<p:ajax event="rowSelect" listener="#{condominioBean.onRowSelect}"/>
+
+						<p:column headerText="Id" width="5%" sortBy="#{c.id}"
+							filterBy="#{c.id}" filterMatchMode="contains" filterStyle="width:90%;">
+							<h:outputText value="#{c.id}"/>
+						</p:column>
+						<p:column headerText="Condomínio" sortBy="#{c.nome}"
+							filterBy="#{c.nome}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{c.nome}"/>
+						</p:column>
+						<p:column headerText="Torres" width="5%">
+							<h:outputText value="#{c.torres.size()}"/>
+						</p:column>
+						<p:column headerText="Data Entrega" sortBy="dataEntrega.time" width="7%">
+							<h:outputText value="#{c.dataEntrega.time}" >
+								<f:convertDateTime pattern="dd/MM/yyyy"/>
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Endereço" sortBy="#{c.logradouro} #{c.numero}"
+							filterBy="#{c.logradouro} #{c.numero}" filterMatchMode="contains" filterStyle="width:90%;">
+							<h:outputText value="#{c.logradouro}, #{c.numero}"/>
+						</p:column>
+						<p:column headerText="Bairro" sortBy="bairro"
+							filterBy="bairro" filterMatchMode="contains" filterStyle="width:90%;">
+							<h:outputText value="#{c.bairro}"/>
+						</p:column>
+						<p:column headerText="Distrito" width="10%" sortBy="distrito.nome" filterBy="distrito.nome" filterMatchMode="exact">
+							<f:facet name="filter">
+				                <p:selectOneMenu onchange="PF('listaCondominios').filter()" style="width: 90%;">
+				                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+				                    <f:selectItems value="#{distritoBean.distritos}" />
+				                </p:selectOneMenu>
+				            </f:facet>
+							<h:outputText value="#{c.distrito.nome}"/>
+						</p:column>
+						<p:column headerText="Setor" width="5%" sortBy="setorizacao.nome" filterBy="setorizacao.nome" filterMatchMode="exact">
+							<f:facet name="filter">
+				                <p:selectOneMenu onchange="PF('listaCondominios').filter()" style="width: 90%;">
+				                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+				                    <f:selectItems value="#{setorizacaoBean.setores}" />
+				                </p:selectOneMenu>
+				            </f:facet>
+							<h:outputText value="#{c.setorizacao.nome}"/>
+						</p:column>
+					</p:dataTable>
+					</h:form>
+				</p:tab>
+			
+			</p:tabView>
+		</ui:define>
+	</ui:composition>
+</html>

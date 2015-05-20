@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:composition template="_template.xhtml">
+	
+		<ui:define name="titulo">
+		</ui:define>
+		
+		<ui:define name="conteudo">
+			<h:form id="bemVindo">
+				<p:messages id="msgs"/>
+				
+				<p:tabView id="tabView" dynamic="true" cache="true">
+					<p:tab id="tabComprador" title="Eu Comprador">
+						<p:fieldset legend="Quer comprar um apartamento?" rendered="#{!acessoClienteBean.comprador}">
+							<h:panelGrid columns="1" width="100%">
+								<p:inputTextarea id="porque" autoResize="true" rows="3" style="width: 100%;"
+									placeholder="Qual o motivo da compra? Ex.: Minha esposa está gravida, quero um apartamento maior"/>
+								<br/>
+								<p:inputTextarea id="onde" autoResize="true" rows="3" style="width: 100%;"
+									placeholder="Informe-nos a localização em que deseja comprar seu apartamento."/>
+								<br/>
+								<p:inputText id="pessoas" style="width: 100%;"
+									placeholder="Número de pessoas que vão morar no apartamento."/>
+								<br/>
+								<p:inputTextarea id="apartamento" autoResize="true" rows="3" style="width: 100%;"
+									placeholder="Descreva as características do apartamento que você deseja."/>
+							</h:panelGrid>
+						</p:fieldset>
+						
+						<p:tabView dynamic="true" cache="true" orientation="left" rendered="#{acessoClienteBean.comprador}">
+							<p:tab id="tabCorretor" title="Meu Corretor">
+								<h:panelGrid id="meuCorretorGrid" columnClasses="title, value" columns="2">
+									<h:outputLabel value="Nome:" for="nome"/>
+									<p:inputText id="nome" value="#{acessoClienteBean.cliente.comprador.corretorResponsavel.corretor}" readonly="true"/>
+									
+									<h:outputLabel value="E-mail:" for="email"/>
+									<p:inputText id="email" value="#{acessoClienteBean.cliente.comprador.corretorResponsavel.corretor.email}" readonly="true"/>
+									
+									<h:outputLabel value="Celular:" for="celular"/>
+									<p:inputText id="celular" value="#{acessoClienteBean.cliente.comprador.corretorResponsavel.corretor.numeroEmpresarial.numero}" readonly="true"/>
+									
+									<h:outputLabel value="Telefone:" for="telefone"/>
+									<p:inputText id="telefone" value="#{acessoClienteBean.cliente.comprador.corretorResponsavel.corretor.telefone}" readonly="true"/>
+								</h:panelGrid>
+							</p:tab>
+							
+							<p:tab id="tabApartamentosFavoritos" title="Meus Apartamentos Favoritos">
+								<h:form id="formAptosFavoritos">
+									<p:dataScroller value="#{acessoClienteBean.cliente.comprador.apartamentosFavoritos}" var="a" chunkSize="10">
+								            <p:outputPanel>
+								                <h:panelGrid columns="3" cellpadding="5">
+								                	<h:panelGrid columns="2" columnClasses="title, value">
+									                    <h:outputLabel value="Condomínio:" for="condominio"/>
+									                    <h:outputText id="condominio" value="#{a.id.apartamento.torre}"/>
+									                    
+									                    <h:outputLabel value="Endereço:" for="endereco"/>
+									 					<h:outputText id="endereco" value="#{a.id.apartamento.torre.condominio.endereco}"/>
+									 					
+									                    <h:outputLabel value="Bairro:" for="bairro"/>
+									 					<h:outputText id="bairro" value="#{a.id.apartamento.torre.condominio.bairro}"/>
+									 					
+									                    <h:outputLabel value="Cidade:" for="cidade"/>
+									 					<h:outputText id="cidade" value="#{a.id.apartamento.torre.condominio.cidade}"/>
+								                	
+								                		<h:outputLabel value="Data da Entrega" for="dataEntrega"/>
+								                		<h:outputText id="dataEntrega" value="#{a.id.apartamento.torre.condominio.dataEntrega.time}">
+								                			<f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo"/>
+								                		</h:outputText>
+								                		
+								                		<h:outputLabel value="Fase:" for="fase"/>
+								                		<h:outputText id="fase" value="#{a.id.apartamento.torre.condominio.fase}"/>
+								                		
+								                	</h:panelGrid>
+								                	
+								                	<h:panelGrid columns="2" columnClasses="title, value">
+									                    <h:outputLabel value="Apartamento:" for="apartamento"/>
+									                    <h:outputText id="apartamento" value="#{a.id.apartamento.numeroApartamento}"/>
+								                	
+								                		<h:outputLabel value="Valor Venda:" for="valorVenda"/>
+									                    <h:outputText id="valorVenda" value="#{a.id.apartamento.valorVenda}"/>
+									                    
+									                    <h:outputLabel value="Valor Condomínio:" for="valorCondominio"/>
+									                    <h:outputText id="valorCondominio" value="#{a.id.apartamento.valorCondominio}"/>
+									                    
+									                    <h:outputLabel value="Valor IPTU:" for="valorIPTU"/>
+									                    <h:outputText id="valorIPTU" value="#{a.id.apartamento.valorIptu}"/>
+									                    
+									                    <h:outputLabel value="Nº Vagas:" for="vagas"/>
+									                    <h:outputText id="vagas" value="#{a.id.apartamento.vagas.size()}"/>
+								                	</h:panelGrid>
+								                	
+								                	<h:panelGrid columns="2" columnClasses="title, value">
+									                    <h:outputLabel value="Área Útil:" for="areaUtil"/>
+									                    <h:outputText id="areaUtil" value="#{a.id.apartamento.areaUtil.areaUtil}"/>
+								                		
+								                		<h:outputLabel value="Dormitórios:" for="dorms"/>
+									                    <h:outputText id="dorms" value="#{a.id.apartamento.planta.dormitorios}"/>
+								                		
+								                		<h:outputLabel value="Suítes:" for="suite"/>
+									                    <h:outputText id="suite" value="#{a.id.apartamento.planta.suites}"/>
+								                		
+								                		<h:outputLabel value="Banheiros:" for="banheiro"/>
+									                    <h:outputText id="banheiro" value="#{a.id.apartamento.planta.banheirosSociais}"/>
+								                		
+								                	</h:panelGrid>
+								                </h:panelGrid>
+				       			                <p:separator />
+								            </p:outputPanel>
+								    </p:dataScroller>
+								</h:form>
+							</p:tab>
+							
+							<p:tab id="tabVisitas" title="Minhas Visitas Feitas">
+								<h:form id="formVisitas">
+									<p:dataTable id="listaVisitas" value="#{acessoClienteBean.cliente.comprador.visitas}" var="v"
+										emptyMessage="Você ainda não fez nenhuma visita." rows="5" rowKey="#{v}"
+										paginator="true" selectionMode="single">
+										
+										
+										<p:column headerText="Id" width="3%">
+											<h:outputText value="#{v.id}"/>
+										</p:column>
+										<p:column headerText="Data da Visita">
+											<h:outputText value="#{v.dataVisita.time}">
+												<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+											</h:outputText>
+										</p:column>
+										<p:column headerText="Status">
+											<h:outputText value="#{v.status}"/>
+										</p:column>
+										<p:column headerText="Corretor">
+											<h:outputText value="#{v.corretor}"/>
+										</p:column>
+										<p:column headerText="Condomínio">
+											<h:outputText value="#{v.apartamento.torre}"/>
+										</p:column>
+										<p:column headerText="Endereço">
+											<h:outputText value="#{v.apartamento.torre.condominio.endereco}"/>
+										</p:column>
+										<p:column headerText="Apartamento">
+											<h:outputText value="#{v.apartamento.numeroApartamento}"/>
+										</p:column>
+									</p:dataTable>
+								</h:form>
+							</p:tab>
+						
+							<p:tab id="tabNegociacoes" title="Minhas Negociações">
+								<h:form id="formLista">
+									<p:dataTable id="listaNegociacoes" widgetVar="listaNegociacoes" value="#{acessoClienteBean.cliente.comprador.negociacoes}" var="n" 
+										emptyMessage="Nenhuma Negociação encontrada" paginator="true" rows="15"
+										selectionMode="single" selection="#{negociacaoBean.negociacao}" rowKey="#{n}">
+										
+										<p:ajax event="rowSelect" listener="#{negociacaoBean.onRowSelect}"/>
+					
+										<p:column headerText="Id" width="5%">
+											<h:outputText value="#{n.id}"/>
+										</p:column>
+										<p:column headerText="Data da Proposta" width="7%">
+											<h:outputText value="#{n.dataProposta.time}">
+												<f:convertDateTime pattern="dd/MM/yy" timeZone="America/Sao_Paulo"/>
+											</h:outputText>
+										</p:column>
+										<p:column headerText="Status" width="10%">
+											<f:facet name="filter">
+								                <p:selectOneMenu onchange="PF('listaNegociacoes').filter()" style="width: 90%;">
+								                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+								                    <f:selectItems value="#{enumBean.statusNegociacao}"/>
+								                </p:selectOneMenu>
+								            </f:facet>	
+												<h:outputText value="#{n.status}"/>
+											</p:column>
+											<p:column headerText="Corretor" width="15%">
+											<f:facet name="filter">
+								                <p:selectOneMenu onchange="PF('listaNegociacoes').filter()" style="width: 90%;">
+								                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+								                    <f:selectItems value="#{funcionarioBean.corretores}" />
+								                </p:selectOneMenu>
+								            </f:facet>
+												<h:outputText value="#{n.corretor}"/>
+											</p:column>
+											<p:column headerText="Vendedor" width="10%">
+												<h:outputText value="#{n.apartamento.vendedor}"/>
+											</p:column>
+											<p:column headerText="Condomínio" width="15%">
+												<h:outputText value="#{n.apartamento.torre}"/>
+											</p:column>
+											<p:column headerText="Endereço" width="20%">
+												<h:outputText value="#{n.apartamento.torre.condominio.endereco}"/>
+											</p:column>
+											<p:column headerText="Valor Apto" width="10%">
+												<h:outputText value="#{n.valorApartamento}"/>
+											</p:column>
+											<p:column headerText="Valor Proposto" width="10%">
+												<h:outputText value="#{n.valorProposto}"/>
+											</p:column>
+											<p:column headerText="Apartamento">
+												<h:outputText value="#{n.apartamento}"/>
+											</p:column>
+									</p:dataTable>
+								</h:form>
+							</p:tab>
+						
+							<p:tab id="tabFechamentos" title="Meus Fechamentos">
+								<h:form id="formListaFechamentos">
+									<p:dataTable id="listaFechamentos" widgetVar="listaFechamentos" value="#{acessoClienteBean.cliente.comprador.fechamentos}" var="f" 
+										emptyMessage="Nenhum Fechamento encontrado" paginator="true" rows="15"
+										selectionMode="single" selection="#{fechamentoBean.fechamento}" rowKey="#{f.id}"
+										filteredValue="#{fechamentoBean.fechamentosFiltrados}">
+										
+										<p:ajax event="rowSelect" listener="#{fechamentoBean.onRowSelect}"/>
+					
+										<p:column headerText="Id" width="5%">
+											<h:outputText value="#{f.id}"/>
+										</p:column>
+										<p:column headerText="Data do Fechamento" width="7%">
+											<h:outputText value="#{f.dataFechamento.time}">
+												<f:convertDateTime pattern="dd/MM/yy" timeZone="America/Sao_Paulo"/>
+											</h:outputText>
+										</p:column>
+										<p:column headerText="Status" width="7%">
+												<h:outputText value="#{f.status}"/>
+										</p:column>
+										<p:column headerText="Corretor" width="15%">
+											<h:outputText value="#{f.negociacao.corretor}"/>
+										</p:column>
+										<p:column headerText="Comprador" width="15%">
+											<h:outputText value="#{f.negociacao.comprador}"/>
+										</p:column>
+										<p:column headerText="Vendedor" width="15%">
+											<h:outputText value="#{f.negociacao.apartamento.vendedor}"/>
+										</p:column>
+										<p:column headerText="Condomínio" width="15%">
+											<h:outputText value="#{f.negociacao.apartamento.torre}"/>
+										</p:column>
+										<p:column headerText="Endereço" width="20%">
+											<h:outputText value="#{f.negociacao.apartamento.torre.condominio.endereco}"/>
+										</p:column>
+										<p:column headerText="Valor Apto" width="10%">
+											<h:outputText value="#{f.negociacao.valorApartamento}"/>
+										</p:column>
+										<p:column headerText="Valor Proposto" width="10%">
+											<h:outputText value="#{f.negociacao.valorProposto}"/>
+										</p:column>
+										<p:column headerText="Apartamento">
+											<h:outputText value="#{f.negociacao.apartamento}"/>
+										</p:column>
+									</p:dataTable>
+								</h:form>
+							</p:tab>
+						</p:tabView>
+					</p:tab>
+					
+					<p:tab id="tabVendedor" title="Eu Vendedor">
+						<p:fieldset legend="Quero vender meu apartamento" rendered="#{!acessoClienteBean.vendedor}">
+							
+						</p:fieldset>
+						
+						<p:fieldset legend="Meus Apartamentos à Venda" rendered="#{acessoClienteBean.vendedor}">
+							<p:dataTable id="listaApartamentos" value="#{acessoClienteBean.cliente.vendedor.apartamentos}" var="a" 
+								emptyMessage="Você não possui nenhum apartamento a venda conosco."
+								selectionMode="single" selection="#{apartamentoBean.apartamento}" rowKey="#{a}" lazy="true">
+								
+								<p:column headerText="Id" width="5%">
+									<h:outputText value="#{a.id}"/>
+								</p:column>
+								<p:column headerText="Condomínio" width="10%">
+									<h:outputText value="#{a.torre}"/>
+								</p:column>
+								<p:column headerText="Endereço" width="15%">
+									<h:outputText value="#{a.torre.condominio.endereco}"/>
+								</p:column>
+								<p:column headerText="Data Entrega" width="8%">
+									<h:outputText value="#{a.torre.condominio.dataEntrega.time}">
+										<f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo"/>
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Fase" width="7%">
+									<h:outputText value="#{a.torre.condominio.fase}"/>
+								</p:column>
+								<p:column headerText="Apto" width="5%">
+									<h:outputText value="#{a.numeroApartamento}"/>
+								</p:column>
+								<p:column headerText="Tipo Apartamento" width="7%">
+									<h:outputText value="#{a.tipoApartamento.nome}"/>
+								</p:column>
+								<p:column headerText="Valor Venda" width="7%">
+									<h:outputText value="#{a.valorVenda}"/>
+								</p:column>
+								<p:column headerText="Valor Cond." width="7%">
+									<h:outputText value="#{a.valorCondominio}"/>
+								</p:column>
+								<p:column headerText="Situação" width="7%">
+									<h:outputText value="#{a.situacao}"/>
+								</p:column>
+								<p:column headerText="Chaves" width="7%">
+									<h:outputText value="#{a.localChaves}"/>
+								</p:column>
+								<p:column headerText="Área Útil" width="7%">
+									<h:outputText value="#{a.areaUtil.areaUtil}"/>								
+								</p:column>
+								<p:column headerText="Dorms" width="7%">
+									<h:outputText value="#{a.planta.dormitorios}"/>								
+								</p:column>
+							</p:dataTable>
+						</p:fieldset>
+					</p:tab>
+				</p:tabView>
+			
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</html>

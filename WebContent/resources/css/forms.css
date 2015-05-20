@@ -1,0 +1,25 @@
+@CHARSET "ISO-8859-1";
+
+.title{
+	font-weight: bold;
+	width: 180px;
+	text-align: right;
+}
+
+.value{
+	width: 500px;
+	margin-left:20px;
+	text-align: left;
+}
+
+.filter{
+	width: 90%;
+}
+
+.dialog{
+	height: 85% !important;
+}
+
+inputText{
+	width: 70%;	
+}

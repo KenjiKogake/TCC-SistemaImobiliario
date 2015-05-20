@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+		</ui:define>
+		<ui:define name="conteudo">
+			<p:growl id="growl"/>
+			
+				<p:dialog header="Cadastro de Periodicidade" widgetVar="periodicidadeDialog" resizable="false" 
+					id="periodicidadeDialog" draggable="false" modal="true" width="40%" closeOnEscape="true">
+					<h:form id="form">
+					<p:outputPanel id="periodicidadeDetail">		
+					<p:tabView style="width:100%;" activeIndex="0">		
+					
+						<p:tab title="Periodicidade">
+							<p:messages id="msgs"/>
+							<h:panelGrid columns="2" columnClasses="title, value">
+								
+								<h:outputLabel value="Id:" for="id" rendered="#{!periodicidadeVagaGaragemBean.novo}"/>
+								<p:inputText id="id" value="#{periodicidadeVagaGaragemBean.periodicidade.id}" rendered="#{!periodicidadeVagaGaragemBean.novo}" disabled="true"/>
+								
+								<h:outputLabel value="Data Cadastro:" for="dataCadastro" rendered="#{!periodicidadeVagaGaragemBean.novo}"/>
+								<p:inputText id="dataCadastro" value="#{periodicidadeVagaGaragemBean.periodicidade.dataCadastro.time}" rendered="#{!periodicidadeVagaGaragemBean.novo}" disabled="true">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</p:inputText>
+								
+								<h:outputLabel value="Cadastrante:" for="quemCadastrou" rendered="#{!periodicidadeVagaGaragemBean.novo}"/>
+								<p:inputText id="quemCadastrou" value="#{periodicidadeVagaGaragemBean.periodicidade.quemCadastrou}" rendered="#{!periodicidadeVagaGaragemBean.novo}" disabled="true"/>
+								
+								<h:outputLabel value="Periodicidade:" for="periodicidade"/>
+								<p:inputText id="periodicidade" value="#{periodicidadeVagaGaragemBean.periodicidade.nome}">
+									<p:ajax event="keypress" update="msgs"/>
+								</p:inputText>
+								
+								<h:outputLabel value="Descrição:" for="descricao"/>
+								<p:inputTextarea id="descricao" value="#{periodicidadeVagaGaragemBean.periodicidade.descricao}"
+									autoResize="true" rows="2">
+									<p:ajax event="keypress" update="msgs"/>
+								</p:inputTextarea>
+							
+								<p:commandButton value="#{periodicidadeVagaGaragemBean.novo? 'Gravar' : 'Atualizar'}" process=":form:periodicidadeDetail" 
+									update=":formLista:listaPeriodicidades :form" action="#{periodicidadeVagaGaragemBean.gravar}" rendered="#{acessoBean.acessoPeriodicidade >= 2}"/>
+									
+								<p:commandButton value="Deletar" process=":form:periodicidadeDetail" 
+									update=":formLista:listaPeriodicidades :form :growl" actionListener="#{periodicidadeVagaGaragemBean.deletar}" 
+									rendered="#{!periodicidadeVagaGaragemBean.novo and acessoBean.acessoPeriodicidade >= 4}" oncomplete="PF('periodicidadeDialog').hide()">
+									<p:confirm header="Deletar" message="Confirmar?"/>
+								</p:commandButton>
+								
+								<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							    </p:confirmDialog>
+								
+							</h:panelGrid>
+						</p:tab>
+						
+					</p:tabView>
+					</p:outputPanel>
+					</h:form>
+				</p:dialog>
+				
+				<h:form id="formLista" rendered="#{acessoBean.acessoPeriodicidade >= 1}">
+					<p:fieldset legend="Periodicidades" style="width:50%">
+				
+						<p:commandButton value="Nova Periodicidade" update=":form:periodicidadeDetail" onclick="PF('periodicidadeDialog').show()" 
+							actionListener="#{periodicidadeVagaGaragemBean.limparPeriodicidade}" rendered="#{acessoBean.acessoPeriodicidade >= 3}"/>
+						<br/>
+						
+						<p:dataTable id="listaPeriodicidades" widgetVar="listaPeriodicidades" value="#{periodicidadeVagaGaragemBean.periodicidades}" var="p" 
+							emptyMessage="Nenhuma periodicidade encontrada" paginator="true" rows="15"
+							selectionMode="single" selection="#{periodicidadeVagaGaragemBean.periodicidade}" rowKey="#{p}"
+							filteredValue="#{periodicidadeVagaGaragemBean.periodicidadesFiltradas}">
+							
+							<p:ajax event="rowSelect" update=":form:periodicidadeDetail" oncomplete="PF('periodicidadeDialog').show()"/>
+							
+							<p:column headerText="Id" width="10%" sortBy="#{p.id}"
+								filterBy="#{p.id}" filterMatchMode="contains" filterStyle="width:90%;">
+								<h:outputText value="#{p.id}"/>
+							</p:column>
+							<p:column headerText="Data Cadastro" width="15%" sortBy="#{p.dataCadastro.time}">
+								<h:outputText value="#{p.dataCadastro.time}">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Periodicidade" width="30%" sortBy="#{p.nome}"
+								filterBy="#{p.nome}" filterMatchMode="contains" filterStyle="width:90%;">
+								<h:outputText value="#{p.nome}"/>
+							</p:column>
+							<p:column headerText="Descrição" width="30%" sortBy="#{p.descricao}"
+								filterBy="#{p.descricao}" filterMatchMode="contains" filterStyle="width:90%;">
+								<h:outputText value="#{p.descricao}"/>
+							</p:column>
+						</p:dataTable>
+					</p:fieldset>
+				</h:form>
+
+		</ui:define>
+	</ui:composition>
+</html>

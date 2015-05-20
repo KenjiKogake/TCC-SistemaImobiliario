@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="_template.xhtml">
+	<ui:define name="titulo">
+			<f:metadata>
+			<f:event listener="#{clienteBean.atualizaLista}" type="preRenderView"/>
+			</f:metadata>
+	</ui:define>
+	<ui:define name="conteudo">
+
+		<h:form id="formLista" rendered="#{acessoBean.acessoCliente >= 1}">
+			<p:fieldset legend="Clientes">
+				<p:commandButton action="cliente?faces-redirect=true" value="Novo Cliente" />
+				<p:dataTable id="listaClientes" value="#{clienteBean.clientes}"
+					var="c" emptyMessage="Nenhum cliente Cadastrado" paginator="true"
+					rows="15" selectionMode="single" selection="#{clienteBean.cliente}"
+					rowKey="#{c.id}" filteredValue="#{clienteBean.clientesFiltrados}">
+
+					<p:ajax event="rowSelect" listener="#{clienteBean.redirectWithParam}"
+						includeViewParams="true" type="preRenderView" />
+					<p:column headerText="Id" width="5%" sortBy="#{c.id}"
+					filterBy="#{c.id}" filterStyle="width:90%" filterMatchMode="contains">
+						<h:outputText value="#{c.id}"/>
+					</p:column>
+					<p:column headerText="Nome" sortBy="#{c.nome} #{c.sobrenome}"
+					filterBy="#{c.nome} #{c.sobrenome}" filterStyle="width:90%" filterMatchMode="contains">
+						<h:outputText value="#{c.nome} #{c.sobrenome}" />
+					</p:column>
+					<p:column headerText="Celular" width="12%" sortBy="#{c.celular}"
+					filterBy="#{c.celular}" filterStyle="width:90%" filterMatchMode="contains">
+						<h:outputText value="#{c.celular}"/>
+					</p:column>
+					<p:column headerText="Telefone" width="12%" sortBy="#{c.telefone}"
+					filterBy="#{c.telefone}" filterStyle="width:90%" filterMatchMode="contains">
+						<h:outputText value="#{c.telefone}" />
+					</p:column>
+					<p:column headerText="E-mail" sortBy="#{c.email}"
+					filterBy="#{c.email}" filterStyle="width:90%" filterMatchMode="contains">
+						<h:outputText value="#{c.email}" />
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+			</h:form>
+			
+			
+			
+			
+<!-- 			<p:dialog header="Cadastro de Cliente" widgetVar="clienteDialog" -->
+<!-- 				id="clienteDialog" draggable="false" modal="true" closeOnEscape="true"> -->
+<!-- 				<h:form id="formCadastro"> -->
+<!-- 				<p:outputPanel id="clienteDetail"> -->
+<!-- 					<p:messages id="msgs" /> -->
+<!-- 					<p:accordionPanel id="clientePanel" multiple="false"> -->
+
+<!-- 						Tab Informações do Cliente -->
+<!-- 						<p:tab title="Informações Pessoais"> -->
+<!-- 							<h:panelGrid columns="2" columnClasses="title, value"> -->
+
+<!-- 								<h:outputLabel value="Nome:" for="nome" /> -->
+<!-- 								<p:inputText id="nome" value="#{clienteBean.cliente.nome}" -->
+<!-- 									required="true" requiredMessage="Campo obrigatório - Nome."> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs" /> -->
+<!-- 								</p:inputText> -->
+
+<!-- 								<h:outputLabel value="Sobrenome:" for="sobrenome" /> -->
+<!-- 								<p:inputText id="sobrenome" -->
+<!-- 									value="#{clienteBean.cliente.sobrenome}" required="true" -->
+<!-- 									requiredMessage="Campo obrigatório - Sobrenome."> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputText> -->
+
+<!-- 								<h:outputLabel value="Data de Nascimento:" for="dataNascimento" /> -->
+<!-- 								<p:calendar id="dataNascimento" -->
+<!-- 									value="#{clienteBean.cliente.dataNascimento.time}" -->
+<!-- 									effect="fold" navigator="true" pattern="dd/MM/yyyy" -->
+<!-- 									timeZone="America/Sao_Paulo" locale="br" /> -->
+
+<!-- 								<h:outputLabel value="CPF:" for="cpf" /> -->
+<!-- 								<p:inputMask mask="999.999.999-99" id="cpf" -->
+<!-- 									value="#{clienteBean.cliente.cpf}" -->
+<!-- 									validatorMessage="CPF Inválido."> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputMask> -->
+
+<!-- 								<h:outputLabel value="RG:" for="rg" /> -->
+<!-- 								<p:inputMask mask="99.999.999-9" id="rg" -->
+<!-- 									value="#{clienteBean.cliente.rg}" /> -->
+
+<!-- 								<h:outputLabel value="Telefone:" for="telefone" /> -->
+<!-- 								<p:inputMask mask="(99)9999-9999" id="telefone" -->
+<!-- 									value="#{clienteBean.cliente.telefone}" /> -->
+
+<!-- 								<h:outputLabel value="Celular:" for="celular" /> -->
+<!-- 								<p:inputMask mask="(99)99999-9999" id="celular" -->
+<!-- 									value="#{clienteBean.cliente.celular}" required="true" -->
+<!-- 									requiredMessage="Campo obrigatório - Celular."> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputMask> -->
+
+<!-- 								<h:outputLabel value="Email:" for="email" /> -->
+<!-- 								<p:inputText id="email" value="#{clienteBean.cliente.email}" -->
+<!-- 									validatorMessage="E-mail Inválido"> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputText> -->
+
+<!-- 							</h:panelGrid> -->
+<!-- 						</p:tab> -->
+
+<!-- 						Tab Informações Endereço -->
+<!-- 						<p:tab title="Endereço"> -->
+<!-- 							<h:panelGrid columns="2" columnClasses="title, value" -->
+<!-- 								styleClass="panelGrid" id="panelEndereco"> -->
+<!-- 								<h:outputLabel value="CEP*:" for="cep" /> -->
+<!-- 								<p:inputMask id="cep" mask="99999-999" -->
+<!-- 									value="#{clienteBean.cliente.cep}"> -->
+<!-- 									<p:ajax event="blur" listener="#{clienteBean.buscaCEP}" update="panelEndereco :formCadastro:msgs"/> -->
+<!-- 								</p:inputMask> -->
+
+<!-- 								<h:outputLabel value="Logradouro*:" for="logradouro" /> -->
+<!-- 								<p:inputText id="logradouro" -->
+<!-- 									value="#{clienteBean.cliente.logradouro}" required="true" -->
+<!-- 									requiredMessage="Campo obrigatório - Logradouro."> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputText> -->
+
+<!-- 								<h:outputLabel value="Número*:" for="numero" /> -->
+<!-- 								<p:inputText id="numero" value="#{clienteBean.cliente.numero}" -->
+<!-- 									required="true" requiredMessage="Campo obrigatório - Número." -->
+<!-- 									converterMessage="Digite um número válido"> -->
+<!-- 									<f:convertNumber integerOnly="true" /> -->
+<!-- 									<f:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputText> -->
+
+<!-- 								<h:outputLabel value="Complemento:" for="complemento" /> -->
+<!-- 								<p:inputText id="complemento" -->
+<!-- 									value="#{clienteBean.cliente.complemento}" /> -->
+
+<!-- 								<h:outputLabel value="Bairro:" for="bairro" /> -->
+<!-- 								<p:inputText id="bairro" value="#{clienteBean.cliente.bairro}" -->
+<!-- 									required="true" requiredMessage="Campo obrigatório - Bairro."> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputText> -->
+
+<!-- 								<h:outputLabel value="Região:" for="regiao" /> -->
+<!-- 								<p:selectOneMenu id="regiao" -->
+<!-- 									value="#{clienteBean.cliente.regiao}" -->
+<!-- 									converter="entityConverter"> -->
+<!-- 									<f:selectItems value="#{regiaoBean.regioes}" var="r" -->
+<!-- 										itemLabel="#{r.descricao}" /> -->
+<!-- 								</p:selectOneMenu> -->
+
+<!-- 								<h:outputLabel value="Distrito:" for="distrito" /> -->
+<!-- 								<p:selectOneMenu id="distrito" -->
+<!-- 									value="#{clienteBean.cliente.distrito}" -->
+<!-- 									converter="entityConverter" filter="true" -->
+<!-- 									filterMatchMode="startsWith" effect="fade"> -->
+<!-- 									<f:selectItems value="#{distritoBean.distritos}" var="d" -->
+<!-- 										itemLabel="#{d.nome}" /> -->
+<!-- 								</p:selectOneMenu> -->
+
+<!-- 								<h:outputLabel value="Cidade:" for="cidade" /> -->
+<!-- 								<p:inputText id="cidade" value="#{clienteBean.cliente.cidade}" -->
+<!-- 									required="true" requiredMessage="Campo obrigatório - Cidade."> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputText> -->
+
+<!-- 								<h:outputLabel value="Estado:" for="estado" /> -->
+<!-- 								<p:selectOneMenu id="estado" -->
+<!-- 									value="#{clienteBean.cliente.estado}"> -->
+<!-- 									<f:selectItems value="#{enumBean.estados}" /> -->
+<!-- 								</p:selectOneMenu> -->
+<!-- 							</h:panelGrid> -->
+<!-- 						</p:tab> -->
+						
+<!-- 												Tab Informações Endereço Trabalho -->
+<!-- 						<p:tab title="Endereço Trabalho"> -->
+<!-- 							<h:panelGrid columns="2" columnClasses="title, value" -->
+<!-- 								styleClass="panelGrid" id="panelEnderecoTrabalho"> -->
+<!-- 								<h:outputLabel value="CEP*:" for="cepTrabalho" /> -->
+<!-- 								<p:inputMask id="cepTrabalho" mask="99999-999" -->
+<!-- 									value="#{clienteBean.cliente.cepTrabalho}"> -->
+<!-- 									<p:ajax event="blur" listener="#{clienteBean.buscaCEPTrabalho}" update="panelEnderecoTrabalho :formCadastro:msgs"/> -->
+<!-- 									update="IMPLEMENTAR BUSCA CEP" -->
+<!-- 								</p:inputMask> -->
+
+<!-- 								<h:outputLabel value="Logradouro*:" for="logradouroTrabalho" /> -->
+<!-- 								<p:inputText id="logradouroTrabalho" -->
+<!-- 									value="#{clienteBean.cliente.logradouroTrabalho}" required="true" -->
+<!-- 									requiredMessage="Campo obrigatório - Logradouro."> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputText> -->
+
+<!-- 								<h:outputLabel value="Número*:" for="numeroTrabalho" /> -->
+<!-- 								<p:inputText id="numeroTrabalho" value="#{clienteBean.cliente.numeroTrabalho}" -->
+<!-- 									required="true" requiredMessage="Campo obrigatório - Número." -->
+<!-- 									converterMessage="Digite um número válido"> -->
+<!-- 									<f:convertNumber integerOnly="true" /> -->
+<!-- 									<f:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputText> -->
+
+<!-- 								<h:outputLabel value="Complemento:" for="complementoTrabalho" /> -->
+<!-- 								<p:inputText id="complementoTrabalho" -->
+<!-- 									value="#{clienteBean.cliente.complementoTrabalho}" /> -->
+
+<!-- 								<h:outputLabel value="Bairro:" for="bairroTrabalho" /> -->
+<!-- 								<p:inputText id="bairroTrabalho" value="#{clienteBean.cliente.bairroTrabalho}" -->
+<!-- 									required="true" requiredMessage="Campo obrigatório - Bairro."> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputText> -->
+
+<!-- 								<h:outputLabel value="Região:" for="regiaoTrabalho" /> -->
+<!-- 								<p:selectOneMenu id="regiaoTrabalho" -->
+<!-- 									value="#{clienteBean.cliente.regiaoTrabalho}" -->
+<!-- 									converter="entityConverter"> -->
+<!-- 									<f:selectItems value="#{regiaoBean.regioes}" var="r" -->
+<!-- 										itemLabel="#{r.descricao}" /> -->
+<!-- 								</p:selectOneMenu> -->
+
+<!-- 								<h:outputLabel value="Distrito:" for="distritoTrabalho" /> -->
+<!-- 								<p:selectOneMenu id="distritoTrabalho" -->
+<!-- 									value="#{clienteBean.cliente.distritoTrabalho}" -->
+<!-- 									converter="entityConverter" filter="true" -->
+<!-- 									filterMatchMode="startsWith" effect="fade"> -->
+<!-- 									<f:selectItems value="#{distritoBean.distritos}" var="d" -->
+<!-- 										itemLabel="#{d.nome}" /> -->
+<!-- 								</p:selectOneMenu> -->
+
+<!-- 								<h:outputLabel value="Cidade:" for="cidadeTrabalho" /> -->
+<!-- 								<p:inputText id="cidadeTrabalho" value="#{clienteBean.cliente.cidadeTrabalho}" -->
+<!-- 									required="true" requiredMessage="Campo obrigatório - Cidade."> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputText> -->
+
+<!-- 								<h:outputLabel value="Estado:" for="estadoTrabalho" /> -->
+<!-- 								<p:selectOneMenu id="estadoTrabalho" -->
+<!-- 									value="#{clienteBean.cliente.estadoTrabalho}"> -->
+<!-- 									<f:selectItems value="#{enumBean.estados}" /> -->
+<!-- 								</p:selectOneMenu> -->
+<!-- 							</h:panelGrid> -->
+<!-- 						</p:tab> -->
+
+<!-- 						Tab Informações do Conjuge -->
+<!-- 						<p:tab title="Informações do Conjuge"> -->
+<!-- 							<h:panelGrid columns="2" columnClasses="title, value"> -->
+
+<!-- 								<h:outputLabel value="Nome:" for="nome" /> -->
+<!-- 								<p:inputText id="nomeConjuge" -->
+<!-- 									value="#{clienteBean.cliente.nomeConjuge}" required="true" -->
+<!-- 									requiredMessage="Campo obrigatório - Nome do conjuge."> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputText> -->
+
+<!-- 								<h:outputLabel value="Sobrenome:" for="sobrenome" /> -->
+<!-- 								<p:inputText id="sobrenomeConjuge" -->
+<!-- 									value="#{clienteBean.cliente.sobrenomeConjuge}" required="true" -->
+<!-- 									requiredMessage="Campo obrigatório - Sobrenome do conjuge."> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputText> -->
+
+<!-- 								<h:outputLabel value="Data de Nascimento:" for="dataNascimento" /> -->
+<!-- 								<p:calendar id="dataNascimentoConjuge" -->
+<!-- 									value="#{clienteBean.cliente.dataNascimentoConjuge.time}" -->
+<!-- 									effect="fold" navigator="true" pattern="dd/MM/yyyy" -->
+<!-- 									timeZone="America/Sao_Paulo" locale="br" /> -->
+
+<!-- 								<h:outputLabel value="CPF:" for="cpf" /> -->
+<!-- 								<p:inputMask mask="999.999.999-99" id="cpfConjuge" -->
+<!-- 									value="#{clienteBean.cliente.cpfConjuge}" -->
+<!-- 									validatorMessage="CPF do conjuge Inválido."> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputMask> -->
+
+<!-- 								<h:outputLabel value="RG:" for="rg" /> -->
+<!-- 								<p:inputMask mask="99.999.999-9" id="rgConjuge" -->
+<!-- 									value="#{clienteBean.cliente.rgConjuge}" /> -->
+
+<!-- 								<h:outputLabel value="Telefone:" for="telefone" /> -->
+<!-- 								<p:inputMask mask="(99)9999-9999" id="telefoneConjuge" -->
+<!-- 									value="#{clienteBean.cliente.telefoneConjuge}" /> -->
+
+<!-- 								<h:outputLabel value="Celular:" for="celular" /> -->
+<!-- 								<p:inputMask mask="(99)99999-9999" id="celularConjuge" -->
+<!-- 									value="#{clienteBean.cliente.celularConjuge}" required="true" -->
+<!-- 									requiredMessage="Campo obrigatório - Celular do conjuge."> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputMask> -->
+
+<!-- 								<h:outputLabel value="Email:" for="email" /> -->
+<!-- 								<p:inputText id="emailConjuge" -->
+<!-- 									value="#{clienteBean.cliente.emailConjuge}" -->
+<!-- 									validatorMessage="E-mail do conjuge Inválido"> -->
+<!-- 									<p:ajax event="blur" update=":formCadastro:msgs"/> -->
+<!-- 								</p:inputText> -->
+<!-- 							</h:panelGrid> -->
+<!-- 						</p:tab> -->
+<!-- 					</p:accordionPanel> -->
+<!-- 					<p:commandButton value="Gravar" -->
+<!-- 						actionListener="#{clienteBean.gravar()}" -->
+<!-- 						process=":formCadastro:clienteDetail" update=":formLista:listaClientes :formCadastro:clienteDetail" />								 -->
+<!-- 				</p:outputPanel> -->
+<!-- 				</h:form> -->
+<!-- 			</p:dialog> -->
+	</ui:define>
+</ui:composition>
+</html>

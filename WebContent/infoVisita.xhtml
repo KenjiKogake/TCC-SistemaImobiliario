@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+    <body>
+	    <h:outputStylesheet library="css" name="forms.css"/>
+	    <ui:composition>
+	    
+			<p:messages id="msgsVisita" />
+			<h:panelGrid id="panelVisita" columns="2" columnClasses="title, value">
+				
+				<h:outputLabel value="Id" for="id" rendered="#{!visitaBean.novo}"/> 
+				<p:inputText value="#{visitaBean.visita.id}" rendered="#{!visitaBean.novo}" disabled="true"/>
+			
+				<h:outputLabel value="Data" for="dataVisita"/>
+				<p:calendar id="dataVisita" value="#{visitaBean.visita.dataVisita.time}" effect="fold" navigator="true"
+					pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" locale="br" disabled="#{!visitaBean.pendente}" />
+					
+				<h:outputLabel value="Cancelamento" for="dataCancelamento" rendered="#{visitaBean.cancelada}"/>
+				<p:calendar id="dataCancelamento" value="#{visitaBean.visita.dataCancelamento}" effect="fold" navigator="true"
+					pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" locale="br" rendered="#{visitaBean.cancelada}" disabled="true"/>
+					
+				<h:outputLabel value="Confirmação" for="dataConfirmacao" rendered="#{visitaBean.confirmada}"/>
+				<p:calendar id="dataConfirmacao" value="#{visitaBean.visita.dataConfirmacao}" effect="fold" navigator="true"
+					pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" locale="br" rendered="#{visitaBean.confirmada}" disabled="true"/>
+				
+				<h:outputLabel value="Status" for="status"/>
+				<h:outputText id="status" value="#{visitaBean.visita.status}"/>
+				
+				<h:outputLabel value="Corretor:" for="corretor"/>
+				<p:inplace id="corretor" editor="true" saveLabel="Atribuir" cancelLabel="Cancelar" disabled="#{!(acessoBean.acessoAtribuirVisita >= 3)}"
+		        	label="#{visitaBean.comCorretor ? visitaBean.visita.corretor : 'Selecione um Corretor'}" >
+		            <p:selectOneMenu value="#{visitaBean.visita.corretor}" converter="entityConverter"
+						filter="true" filterMatchMode="startsWith" effect="fade">
+						<f:selectItems value="#{funcionarioBean.corretores}" var="f" itemLabel="#{f}"/>
+					</p:selectOneMenu>
+		        </p:inplace>
+			</h:panelGrid>
+			
+			<h:panelGrid columns="2" width="100%">	
+			<p:fieldset legend="Apartamento" style="width:90%;height:100%;">
+				<h:panelGrid id="panelApartamento" columns="2" columnClasses="title, value">
+				
+				<h:outputLabel value="Código: " for="idApartamento"/>
+				<p:commandLink id="idApartamento" value="#{visitaBean.visita.apartamento.id}" onclick="novoApartamento?faces-redirect=true"/>
+				
+				<h:outputLabel value="Condomínio: "/>
+				<h:outputText value="#{visitaBean.visita.apartamento.torre}" />
+				
+				<h:outputLabel value="Endereço: "/>
+				<h:outputText value="#{visitaBean.visita.apartamento.torre.condominio.endereco}" />
+				
+				<h:outputLabel value="Apartamento: " for="apartamento"/>
+				<h:outputText id="apartamento" value="#{visitaBean.visita.apartamento.numeroApartamento}" />
+				
+				<h:outputLabel value="Andar: "/>
+				<h:outputText value="#{visitaBean.visita.apartamento.andar}" />
+
+				<h:outputLabel value="Valor: "/>
+				<h:outputText value="#{visitaBean.visita.apartamento.valorVenda}" />
+				
+				<h:outputLabel value="Valor Cond.: "/>
+				<h:outputText value="#{visitaBean.visita.apartamento.valorCondominio}" />
+				
+				<h:outputLabel value="Status.: "/>
+				<h:outputText value="#{visitaBean.visita.apartamento.status}" />
+				
+				</h:panelGrid>
+			</p:fieldset>					
+			
+
+			<p:fieldset legend="Comprador" style="width:90%;height:100%;">				
+				<h:panelGrid id="panelComprador" columns="2" columnClasses="title, value">
+				
+				<h:outputLabel value="Código:" for="codigoComprador"/>
+				<p:commandLink id="codigoComprador" value="#{visitaBean.visita.comprador.id}"/>
+					
+				<h:outputLabel value="Comprador: " for="comprador"/>
+				<h:outputText id="comprador" value="#{visitaBean.visita.comprador.cliente.nome}" />
+				
+				<h:outputLabel value="Telefone: " for="telefone"/>
+				<h:outputText id="telefone" value="#{visitaBean.visita.comprador.cliente.telefone}" />
+
+				<h:outputLabel value="Celular: " for="celular"/>
+				<h:outputText id="celular" value="#{visitaBean.visita.comprador.cliente.celular}" />
+				
+				<h:outputLabel value="E-mail: " for="email"/>
+				<p:commandLink id="email" value="#{visitaBean.visita.comprador.cliente.email}" />
+				
+				<h:outputLabel value="Grau de Interesse: " for="grauInteresse"/>
+				<p:rating id="grauInteresse" value="#{visitaBean.visita.comprador.grauInteresse}"  readonly="true"/>
+				
+				<h:outputLabel value="Estágio Atnd:" for="estagioAtendimento"/>
+				<h:outputText id="estagioAtendimento" value="#{visitaBean.visita.comprador.estagioAtendimento.estagio}"/>
+				
+				</h:panelGrid>	
+			</p:fieldset>
+			</h:panelGrid>
+				
+	    </ui:composition>
+    </body>
+</html>

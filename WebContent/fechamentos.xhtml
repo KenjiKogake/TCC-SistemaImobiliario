@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+			<f:metadata>
+				<f:event listener="#{fechamentoBean.atualizaLista}" type="preRenderView" />
+			</f:metadata>
+		</ui:define>
+		<ui:define name="conteudo">
+		
+		<p:growl id="growl"/>
+		<h:form id="formLista" rendered="#{acessoBean.acessoFechamento >= 1}">
+			<p:fieldset legend="Fechamentos" style="width:100%">
+				<p:dataTable id="listaFechamentos" widgetVar="listaFechamentos" value="#{fechamentoBean.fechamentos}" var="f" 
+					emptyMessage="Nenhum Fechamento encontrado" paginator="true" rows="15"
+					selectionMode="single" selection="#{fechamentoBean.fechamento}" rowKey="#{f.id}"
+					filteredValue="#{fechamentoBean.fechamentosFiltrados}">
+					
+					<p:ajax event="rowSelect" listener="#{fechamentoBean.onRowSelect}"/>
+
+					<p:column headerText="Id" width="5%" filterBy="id" filterMatchMode="contains" filterStyle="width: 90%;"
+						sortBy="id">
+						<h:outputText value="#{f.id}"/>
+					</p:column>
+					<p:column headerText="Data do Fechamento" width="10%" sortBy="dataFechamento.time">
+						<h:outputText value="#{f.dataFechamento.time}">
+							<f:convertDateTime pattern="dd/MM/yy" timeZone="America/Sao_Paulo"/>
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Status" width="10%" filterBy="status" filterMatchMode="exact" filterStyle="width: 90%;"
+						sortBy="status">
+						<f:facet name="filter">
+			                <p:selectOneMenu onchange="PF('listaFechamentos').filter()" style="width: 90%;">
+			                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+			                    <f:selectItems value="#{enumBean.statusFechamento}"/>
+			                </p:selectOneMenu>
+			            </f:facet>	
+							<h:outputText value="#{f.status}"/>
+						</p:column>
+						<p:column headerText="Corretor" width="15%" filterBy="negociacao.corretor" filterMatchMode="exact" filterStyle="width: 90%;"
+							sortBy="negociacao.corretor.nome">
+						<f:facet name="filter">
+			                <p:selectOneMenu onchange="PF('listaFechamentos').filter()" style="width: 90%;">
+			                    <f:selectItem itemLabel="Selecione" itemValue="#{null}" noSelectionOption="true" />
+			                    <f:selectItems value="#{funcionarioBean.corretores}" />
+			                </p:selectOneMenu>
+			            </f:facet>
+							<h:outputText value="#{f.negociacao.corretor}"/>
+						</p:column>
+						<p:column headerText="Comprador" width="15%" filterBy="negociacao.comprador" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="negociacao.comprador.cliente.nome">
+							<h:outputText value="#{f.negociacao.comprador}"/>
+						</p:column>
+						<p:column headerText="Vendedor" width="15%" filterBy="negociacao.apartamento.vendedor" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="negociacao.apartamento.vendedor.cliente.nome">
+							<h:outputText value="#{f.negociacao.apartamento.vendedor}"/>
+						</p:column>
+						<p:column headerText="Condomínio" width="15%" filterBy="negociacao.apartamento.torre" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="negociacao.apartamento.torre.condominio.nome">
+							<h:outputText value="#{f.negociacao.apartamento.torre}"/>
+						</p:column>
+						<p:column headerText="Endereço" width="20%" filterBy="negociacao.apartamento.torre.condominio.endereco" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="negociacao.apartamento.torre.condominio.endereco">
+							<h:outputText value="#{f.negociacao.apartamento.torre.condominio.endereco}"/>
+						</p:column>
+						<p:column headerText="Valor Apto" width="10%" filterBy="negociacao.valorApartamento" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="negociacao.valorApartamento">
+							<h:outputText value="#{f.negociacao.valorApartamento}"/>
+						</p:column>
+						<p:column headerText="Valor Proposto" width="10%" filterBy="negociacao.valorProposto" filterMatchMode="contains" filterStyle="width: 90%;"
+							sortBy="negociacao.valorProposto">
+							<h:outputText value="#{f.negociacao.valorProposto}"/>
+						</p:column>
+						<p:column headerText="Apartamento">
+							<h:outputText value="#{f.negociacao.apartamento}"/>
+						</p:column>
+				</p:dataTable>
+			</p:fieldset>
+		</h:form>
+			
+		</ui:define>
+	</ui:composition>
+</html>

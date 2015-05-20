@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+		</ui:define>
+		<ui:define name="conteudo">
+			<p:growl id="growl"/>
+			
+			<p:dialog header="Cadastro de Construtora" widgetVar="construtoraDialog" resizable="false" 
+				id="construtoraDialog" draggable="false" modal="true" width="40%" closeOnEscape="true">
+				<h:form id="form">
+				<p:outputPanel id="construtoraDetail" >		
+				<p:tabView style="width:100%;" activeIndex="0">		
+					<p:tab title="Construtora">
+					<p:messages id="msgs"/>
+						<h:panelGrid columns="2" columnClasses="title, value">
+							
+							<h:outputLabel value="Id:" for="id" rendered="#{!construtoraBean.novo}"/>
+							<p:inputText id="id" value="#{construtoraBean.construtora.id}" rendered="#{!construtoraBean.novo}" disabled="true"/>
+
+							<h:outputLabel value="Data Cadastro:" for="dataCadastro" rendered="#{!construtoraBean.novo}"/>
+							<p:inputText id="dataCadastro" value="#{construtoraBean.construtora.dataCadastro.time}" rendered="#{!construtoraBean.novo}" disabled="true">
+								<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+							</p:inputText>
+							
+							<h:outputLabel value="Cadastrante:" for="quemCadastrou" rendered="#{!construtoraBean.novo}"/>
+							<p:inputText id="quemCadastrou" value="#{construtoraBean.construtora.quemCadastrou}" rendered="#{!construtoraBean.novo}" disabled="true"/>
+							
+							<h:outputLabel value="Construtora:" for="construtora"/>
+							<p:inputText id="construtora" value="#{construtoraBean.construtora.nome}">
+								<p:ajax event="keypress" update="msgs"/>
+							</p:inputText>
+							
+							<h:outputLabel value="Contato Principal:" for="contato"/>
+							<p:inputText id="contato" value="#{construtoraBean.construtora.contato}"/>
+							
+							<h:outputLabel value="Telefone:" for="telefone"/>
+							<p:inputMask mask="(99)9999-9999" id="telefone" value="#{construtoraBean.construtora.telefone}"/>
+							
+							<h:outputLabel value="Celular:" for="celular"/>
+							<p:inputMask mask="(99)99999-9999" id="celular" value="#{construtoraBean.construtora.celular}"/>
+							
+							<h:outputLabel value="E-mail:" for="email"/>
+							<p:inputText id="email" value="#{construtoraBean.construtora.email}">
+								<p:ajax event="blur" update="msgs"/>
+							</p:inputText>
+							
+							<h:outputLabel value="Site:" for="site"/>
+							<p:inputText id="site" value="#{construtoraBean.construtora.site}"/>
+							
+							<p:commandButton value="#{construtoraBean.novo? 'Gravar' : 'Atualizar'}" process=":form:construtoraDetail" update=":formLista:listaConstrutoras :form" 
+								action="#{construtoraBean.gravar}" rendered="#{acessoBean.acessoConstrutora >= 2}"/>
+							<p:commandButton value="Deletar" process=":form:construtoraDetail" update=":formLista:listaConstrutoras :growl" actionListener="#{construtoraBean.deletar}" 
+								rendered="#{construtoraBean.deletavel and acessoBean.acessoConstrutora >= 4}" oncomplete="PF('construtoraDialog').hide()">
+								<p:confirm header="Excluir" message="Confirma Exclusão?"/>
+							</p:commandButton>
+							
+							<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						    </p:confirmDialog>
+						</h:panelGrid>
+					</p:tab>
+					
+					<p:tab title="Condomínios" rendered="#{!construtoraBean.semCondominios}">
+						<p:dataTable id="listaCondominios" value="#{construtoraBean.construtora.condominios}" var="c" 
+							paginator="true" rows="10" lazy="true">
+							<p:column headerText="Id" width="15%">
+								<h:outputText value="#{c.id}"/>
+							</p:column>
+							<p:column headerText="Nome" width="50%">
+								<h:outputText value="#{c.nome}"/>
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+					
+				</p:tabView>
+				</p:outputPanel>
+				</h:form>
+			</p:dialog>
+				
+			<h:form id="formLista" rendered="#{acessoBean.acessoConstrutora >= 1}">			
+				<p:fieldset legend="Construtoras" style="width:80%">
+				
+				<p:commandButton value="Nova Construtora" update=":form:construtoraDetail" onclick="PF('construtoraDialog').show()" 
+					actionListener="#{construtoraBean.limparConstrutora}" rendered="#{acessoBean.acessoConstrutora >= 3}"/>
+				<br/>
+				
+					<p:dataTable id="listaConstrutoras" widgetVar="listaConstrutoras" value="#{construtoraBean.construtoras}" var="c" 
+						emptyMessage="Nenhuma construtora encontrada" paginator="true" rows="15"
+						selectionMode="single" selection="#{construtoraBean.construtora}" rowKey="#{c}" 
+						filteredValue="#{construtoraBean.construtorasFiltradas}">
+						
+						<p:ajax event="rowSelect" update=":form:construtoraDetail"
+							oncomplete="PF('construtoraDialog').show()"/>
+						
+						<p:column headerText="Id" width="10%" sortBy="#{c.id}"
+							filterBy="#{c.id}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{c.id}"/>
+						</p:column>
+						<p:column headerText="Data Cadastro" width="15%" sortBy="#{c.dataCadastro.time}">
+								<h:outputText value="#{c.dataCadastro.time}">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+						<p:column headerText="Construtora" width="30%" sortBy="#{c.nome}"
+							filterBy="#{c.nome}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{c.nome}"/>
+						</p:column>
+						<p:column headerText="Contato" width="20%" sortBy="#{c.contato}"
+							filterBy="#{c.contato}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{c.contato}"/>
+						</p:column>
+						<p:column headerText="Celular" width="25%"
+							filterBy="#{c.celular}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{c.celular}"/>
+						</p:column>
+						<p:column headerText="Telefone" width="30%"
+							filterBy="#{c.telefone}" filterMatchMode="contains" filterStyle="width: 90%;">
+							<h:outputText value="#{c.telefone}"/>
+						</p:column>
+						<p:column headerText="Condomínios" width="15%" sortBy="#{c.condominios.size()}">
+							<h:outputText value="#{c.condominios.size()}"/>
+						</p:column>
+					</p:dataTable>
+				</p:fieldset>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</html>

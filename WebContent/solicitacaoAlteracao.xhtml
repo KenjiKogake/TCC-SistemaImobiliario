@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:composition template="_template.xhtml">
+		<ui:define name="titulo">
+		</ui:define>
+		<ui:define name="conteudo">
+			<p:growl id="growl"/>
+		
+				<p:dialog header="Follow-Ups Pendentes" widgetVar="followUpDialog" resizable="false" 
+					id="followUpDialog" draggable="false" modal="true" width="40%" closeOnEscape="true" dynamic="true">
+					<h:form id="form">
+					<p:outputPanel id="followUpDetail">		
+						<p:messages id="msgs"/>
+						<p:fieldset legend="Apartamento">
+						<h:panelGrid columns="2" columnClasses="title, value">
+							
+							<h:outputLabel value="Condomínio:" for="condominio"/>
+							<h:outputText id="condominio" value="#{followUpApartamentoBean.followUp.apartamento.torre}"/>
+							
+							<h:outputLabel value="Endereço:" for="endereco"/>
+							<h:outputText id="endereco" value="#{followUpApartamentoBean.followUp.apartamento.torre.condominio.endereco}"/>
+							
+							<h:outputLabel value="Apto:" for="apto"/>
+							<h:outputText id="apto" value="#{followUpApartamentoBean.followUp.apartamento.numeroApartamento}"/>
+							
+							<h:outputLabel value="Valor Venda:" for="valorVenda"/>
+							<h:outputText id="valorVenda" value="#{followUpApartamentoBean.followUp.apartamento.valorVenda}"/>
+							
+							<h:outputLabel value="Valor Cond:" for="valorCond"/>
+							<h:outputText id="valorCond" value="#{followUpApartamentoBean.followUp.apartamento.valorCondominio}"/>
+						
+						</h:panelGrid>
+						</p:fieldset>
+						
+						<p:fieldset legend="Solicitação">
+						<h:panelGrid columns="2" columnClasses="title, value">
+							
+							<h:outputLabel value="Id:" for="id"/>
+							<p:commandLink id="id" value="#{followUpApartamentoBean.followUp.id}" target="blank"
+								action="#{followUpApartamentoBean.abrirFicha}"/>
+							
+							<h:outputLabel value="Data:" for="data"/>
+							<h:outputText id="data" value="#{followUpApartamentoBean.followUp.dataFollowUp.time}">
+								<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+							</h:outputText>
+							
+							<h:outputLabel value="Autor:" for="autor"/>
+							<h:outputText id="autor" value="#{followUpApartamentoBean.followUp.autor}"/>
+							
+							<h:outputLabel value="Solicitação:" for="solicitacao"/>
+							<h:outputText id="solicitacao" value="#{followUpApartamentoBean.followUp.followUp}"/>
+						</h:panelGrid>
+						</p:fieldset>
+							<p:commandButton value="Aprovar" process=":form:followUpDetail" update=":formLista:listaSolicitacoes :form" 
+								action="#{followUpApartamentoBean.aprovar}" oncomplete="PF('followUpDialog').hide()">
+								<p:confirm header="Aprovar" message="Confirma Aprovação?"/>
+							</p:commandButton>
+							
+							<p:commandButton value="Recusar" process=":form:followUpDetail" update=":formLista:listaSolicitacoes :form" action="#{followUpApartamentoBean.recusar}" 
+								oncomplete="PF('followUpDialog').hide()">
+								<p:confirm header="Recusar" message="Confirma Recusa?"/>
+							</p:commandButton>
+
+							<p:confirmDialog global="true" showEffect="fade">
+						        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						    </p:confirmDialog>
+							
+					</p:outputPanel>
+					</h:form>
+				</p:dialog>
+				
+				<h:form id="formLista">
+					<p:fieldset legend="Solicitação" style="width:100%">
+					
+						<p:dataTable id="listaSolicitacoes" widgetVar="listaSolicitacoes" value="#{followUpApartamentoBean.followUpsPendentes}" var="f" 
+							emptyMessage="Nenhum Follow-Up Pendente" paginator="true" rows="15"
+							selectionMode="single" selection="#{followUpApartamentoBean.followUp}" rowKey="#{f}">
+							
+							<p:ajax event="rowSelect" listener="#{followUpApartamentoBean.abrirFicha}"/>
+							
+							<p:column headerText="Id" width="10%">
+								<h:outputText value="#{f.id}"/>
+							</p:column>
+							<p:column headerText="Data" width="15%">
+								<h:outputText value="#{f.dataFollowUp.time}">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Autor" width="30%">
+								<h:outputText value="#{f.autor}"/>
+							</p:column>
+							<p:column headerText="Data Revisão" width="30%">
+								<h:outputText value="#{f.dataRevisao}">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Quem Aprovou" width="30%">
+								<h:outputText value="#{f.revisor}">
+									<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Apartamento" width="30%">
+								<h:outputText value="#{f.apartamento.torre} - #{f.apartamento}"/>
+							</p:column>
+						</p:dataTable>
+					</p:fieldset>
+				</h:form>
+
+		</ui:define>
+	</ui:composition>
+</html>

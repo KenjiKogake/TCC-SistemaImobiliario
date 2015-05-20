@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+    <body>
+	    <h:outputStylesheet library="css" name="forms.css"/>
+	    <ui:composition>
+	    	
+					<p:messages id="msgsPlanta"/>
+					<h:panelGrid columns="2" columnClasses="title, value" id="plantaGrid">
+							<h:outputLabel value="Id" for="idPlanta" rendered="#{!plantaTorreBean.novo}"/>
+							<p:inputText id="idPlanta" value="#{plantaTorreBean.planta.id}" disabled="true" rendered="#{!plantaTorreBean.novo}"/>
+							
+							<h:outputLabel value="Data Cadastro:" for="dataCadastro" rendered="#{!plantaTorreBean.novo}"/>
+							<p:inputText id="dataCadastro" value="#{plantaTorreBean.planta.dataCadastro.time}" rendered="#{!plantaTorreBean.novo}" disabled="true">
+								<f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo"/>
+							</p:inputText>
+							
+							<h:outputLabel value="Quem Cadastrou:" for="quemCadastrou" rendered="#{!plantaTorreBean.novo}"/>
+							<p:inputText id="quemCadastrou" value="#{plantaTorreBean.planta.quemCadastrou}" rendered="#{!plantaTorreBean.novo}" disabled="true"/>
+							
+							<h:outputLabel value="Descrição" for="descricao"/>
+							<p:inputTextarea id="descricao" value="#{plantaTorreBean.planta.descricao}" autoResize="true">
+								<p:ajax event="blur"/>
+							</p:inputTextarea>
+							
+							<h:outputLabel value="Andares" for="andares"/>
+							<p:inputTextarea id="andares" value="#{plantaTorreBean.planta.andares}" autoResize="true">
+								<p:ajax event="blur"/>
+							</p:inputTextarea>
+							
+							<h:outputLabel value="Finais" for="finais"/>
+							<p:inputTextarea id="finais" value="#{plantaTorreBean.planta.finais}" autoResize="true">
+								<p:ajax event="blur"/>
+							</p:inputTextarea>
+							
+							<h:outputLabel value="Dormitório" for="dormitorios"/>
+							<p:spinner id="dormitorios" value="#{plantaTorreBean.planta.dormitorios}" min="0" max="20"/>
+							
+							<h:outputLabel value="Suíte" for="suites"/>
+							<p:spinner id="suites" value="#{plantaTorreBean.planta.suites}" min="0" max="20"/>
+							
+							<h:outputLabel value="Terceiro Opcional" for="terceiroOpcional"/>
+							<p:spinner id="terceiroOpcional" value="#{plantaTorreBean.planta.terceiroOpcional}" min="0" max="20"/>
+							
+							<h:outputLabel value="Closet" for="closet"/>
+							<p:spinner id="closet" value="#{plantaTorreBean.planta.closets}" min="0" max="20"/>
+							
+							<h:outputLabel value="Home Office" for="homeOffice"/>
+							<p:spinner id="homeOffice" value="#{plantaTorreBean.planta.homeOffices}" min="0" max="20"/>
+							
+							<h:outputLabel value="Varanda" for="varanda"/>
+							<p:spinner id="varanda" value="#{plantaTorreBean.planta.varandas}" min="0" max="20"/>
+							
+							<h:outputLabel value="Varanda Gourmet" for="varandaGourmet"/>
+							<p:spinner id="varandaGourmet" value="#{plantaTorreBean.planta.varandasGourmet}" min="0" max="20"/>
+							
+							<h:outputLabel value="Sala" for="sala"/>
+							<p:spinner id="sala" value="#{plantaTorreBean.planta.sala}" min="0" max="20"/>
+							
+							<h:outputLabel value="Sala de Estar" for="salaDeEstar"/>
+							<p:spinner id="salaDeEstar" value="#{plantaTorreBean.planta.salaDeEstar}" min="0" max="20"/>
+							
+							<h:outputLabel value="Sala de Jantar" for="salaDeJantar"/>
+							<p:spinner id="salaDeJantar" value="#{plantaTorreBean.planta.salaDeJantar}" min="0" max="20"/>
+							
+							<h:outputLabel value="Cozinha" for="cozinha"/>
+							<p:spinner id="cozinha" value="#{plantaTorreBean.planta.cozinhas}" min="0" max="20"/>
+							
+							<h:outputLabel value="Copa" for="copa"/>
+							<p:spinner id="copa" value="#{plantaTorreBean.planta.copas}" min="0" max="20"/>
+							
+							<h:outputLabel value="Despensa" for="despensa"/>
+							<p:spinner id="despensa" value="#{plantaTorreBean.planta.despensas}" min="0" max="20"/>
+							
+							<h:outputLabel value="Área de Serviço" for="areaDeServico"/>
+							<p:spinner id="areaDeServico" value="#{plantaTorreBean.planta.areasDeServico}" min="0" max="20"/>
+							
+							<h:outputLabel value="Banheiro Social" for="banheiroSocial"/>
+							<p:spinner id="banheiroSocial" value="#{plantaTorreBean.planta.banheirosSociais}" min="0" max="20"/>
+							
+							<h:outputLabel value="Banheiro de Serviço" for="banheiroServico"/>
+							<p:spinner id="banheiroServico" value="#{plantaTorreBean.planta.banheirosServico}" min="0" max="20"/>
+							
+							<h:outputLabel value="Dependência de Empregada" for="dependenciaEmpregada"/>
+							<p:spinner id="dependenciaEmpregada" value="#{plantaTorreBean.planta.dependenciasEmpregada}" min="0" max="20"/>
+							
+							<h:outputLabel value="Depósito" for="deposito"/>
+							<p:spinner id="deposito" value="#{plantaTorreBean.planta.depositos}" min="0" max="20"/>
+							
+						</h:panelGrid>
+						
+			
+	    </ui:composition>
+    </body>
+</html>
